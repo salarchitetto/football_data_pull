@@ -39,7 +39,7 @@ class Configurator:
         return f"{self.download_link}/{self.country}m.php"
 
     @property
-    def get_directory(self):
+    def get_directory(self) -> str:
         return f"{self.file_path}/{self.league_name}"
 
     def create_years_list(self) -> List[str]:
@@ -74,7 +74,3 @@ class Configurator:
     def create_csv_names(self):
         for year in self.create_years_list():
             self.csv_names.append(f"{self.league_name}_{year}.csv")
-
-
-s = Configurator("England", "premier_league")
-s.list_checker()

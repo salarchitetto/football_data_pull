@@ -7,7 +7,7 @@ class Processor:
         self.configs = configs
 
     @staticmethod
-    def get_dataframe(path):
+    def get_dataframe(path) -> pd.DataFrame:
         return pd.read_csv(path, encoding="utf-8", on_bad_lines='skip')
 
     def save_dataframe(self, dataframe: pd.DataFrame, csv_name: str) -> None:
