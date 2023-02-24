@@ -1,5 +1,6 @@
 import os
 from typing import List
+import platform
 
 
 class Configurator:
@@ -66,8 +67,13 @@ class Configurator:
 
     def create_footy_directories(self) -> None:
         try:
-            os.mkdir("" + self.file_path)
-            [os.mkdir(f"{self.file_path}\\{league}") for league in self.league_dictionary]
+            if platform.system() == "Windows":
+                os.mkdir("" + self.file_path)
+                [os.mkdir(f"{self.file_path}\\{league}") for league in self.league_dictionary]
+            elif platform.system() == "Darwin":
+                print("Mac")
+                os.mkdir("" + self.file_path)
+                [os.mkdir(f"{self.file_path}/{league}") for league in self.league_dictionary]
         except FileExistsError as error:
             print(f"Directories already exist! {error}")
 
