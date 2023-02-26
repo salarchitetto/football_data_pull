@@ -8,13 +8,12 @@ class Processor:
 
     @staticmethod
     def get_dataframe(path) -> pd.DataFrame:
-        return pd.read_csv(path, encoding="utf-8", on_bad_lines='skip')
+        return pd.read_csv(path, encoding='windows-1252', on_bad_lines='skip')
 
     def save_dataframe(self, dataframe: pd.DataFrame, csv_name: str) -> None:
         dataframe.to_csv(f"{self.configs.get_directory}/{csv_name}")
 
     def process(self) -> None:
-        self.configs.create_footy_directories()
         self.configs.create_years_list()
         self.configs.list_checker()
         self.configs.create_csv_names()

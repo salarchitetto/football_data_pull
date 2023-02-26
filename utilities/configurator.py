@@ -1,34 +1,21 @@
 import os
 from typing import List
 import platform
+from configs import Variables
 
 
 class Configurator:
-    def __init__(self, country: str, league_name: str):
+    def __init__(self, country: str, league_name: str, excel_path: str):
         self.country = country
         self.league_name = league_name
-        self.download_link = "https://www.football-data.co.uk/"
+        self.excel_path = excel_path
+        self.download_link = "https://www.football-data.co.uk"
         self.link_constant = "mmz4281"
         self.year_end = range(23, -1, -1)
         self.year_start = range(22, -1, -1)
         self.list_of_years = []
         self.download_paths = []
-        self.league_dictionary = {'premier_league': 'E0',
-                                  'championship': 'E1',
-                                  'scot_prem': 'SC0',
-                                  'scot_d1': 'SC1',
-                                  'bundesliga1': 'D1',
-                                  'bundesliga2': 'D2',
-                                  'seriea': 'I1',
-                                  'serieb': 'I2',
-                                  'laliga1': 'SP1',
-                                  'laliga2': 'SP2',
-                                  'french1': 'F1',
-                                  'french2': 'F2',
-                                  'netherlands': 'N1',
-                                  'belgium': 'B1',
-                                  'portugal': 'P1'
-                                  }
+        self.vars = Variables()
         self.file_path = "footy_dash_data"
         self.csv_names = []
 
@@ -61,21 +48,9 @@ class Configurator:
     def link_to_download_path(self) -> List[str]:
         for amended_year in self.list_of_years:
             self.download_paths \
-                .append(f"{self.download_link}/{self.link_constant}/{amended_year}/{self.league_dictionary[self.league_name]}.csv")
+                .append(f"{self.download_link}/{self.link_constant}/{amended_year}/{self.excel_path}.csv")
 
         return self.download_paths
-
-    def create_footy_directories(self) -> None:
-        try:
-            if platform.system() == "Windows":
-                os.mkdir("" + self.file_path)
-                [os.mkdir(f"{self.file_path}\\{league}") for league in self.league_dictionary]
-            elif platform.system() == "Darwin":
-                print("Mac")
-                os.mkdir("" + self.file_path)
-                [os.mkdir(f"{self.file_path}/{league}") for league in self.league_dictionary]
-        except FileExistsError as error:
-            print(f"Directories already exist! {error}")
 
     def create_csv_names(self):
         for year in self.create_years_list():
