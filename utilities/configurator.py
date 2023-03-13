@@ -1,14 +1,13 @@
-import os
 from typing import List
-import platform
 from configs import Variables
 
 
 class Configurator:
-    def __init__(self, country: str, league_name: str, excel_path: str):
+    def __init__(self, country: str, league_name: str, excel_path: str, file_name: str):
         self.country = country
         self.league_name = league_name
         self.excel_path = excel_path
+        self.file_name = file_name
         self.download_link = "https://www.football-data.co.uk"
         self.link_constant = "mmz4281"
         self.year_end = range(23, -1, -1)
@@ -55,3 +54,7 @@ class Configurator:
     def create_csv_names(self):
         for year in self.create_years_list():
             self.csv_names.append(f"{self.league_name}_{year}.csv")
+
+    @staticmethod
+    def find_diff_between_lists(list1: List[str], list2: List[str]):
+        return list(set(list1) - set(list2))

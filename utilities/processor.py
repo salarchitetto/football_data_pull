@@ -1,17 +1,16 @@
+from postgres.postgres_utils import PostgresUtils
 from utilities.configurator import Configurator
 import pandas as pd
+from utilities.dataframe_util import DataframeUtil
 
 
 class Processor:
-    def __init__(self, configs: Configurator):
+    def __init__(self,
+                 configs: Configurator,
+                 dataframe_util: DataframeUtil):
         self.configs = configs
-
-    @staticmethod
-    def get_dataframe(path) -> pd.DataFrame:
-        return pd.read_csv(path, encoding='windows-1252', on_bad_lines='skip')
-
-    def save_dataframe(self, dataframe: pd.DataFrame, csv_name: str) -> None:
-        dataframe.to_csv(f"{self.configs.get_directory}/{csv_name}")
+        self.dataframe_util = dataframe_util
+        self.dataframes = []
 
     def process(self) -> None:
         self.configs.create_years_list()
@@ -21,7 +20,39 @@ class Processor:
         print(download_paths)
 
         for path, csv_name in zip(download_paths, self.configs.csv_names):
-            print(f"Working on grabbing data for: {path}")
-            self.save_dataframe(self.get_dataframe(path), csv_name)
+            print(f"Appending dataframe to list: {path}")
+            self.dataframe_util.append_dataframe_to_list(path)
+
+        self.dataframe_util.find_all_column_names()
+        for dataframe in self.dataframe_util.dataframes:
+            self.dataframe_util.add_missing_columns_to_dataframe(dataframe)
+
+        if self.configs.league_name == "premier_league":
+            dataframe = self.dataframe_util.union_dataframes()
+            PostgresUtils().create_team_outcomes_table(dataframe)
+            PostgresUtils().upload_dataframe(dataframe)
+            self.dataframe_util.save_dataframe(dataframe, f"{self.configs.file_name}.csv")
+
+        elif self.configs.league_name in ["scot_prem", "serieb", "laliga2"]:
+            for dataframe in self.dataframe_util.cleaned_dataframes:
+                dataframe = self.dataframe_util.clean_dataframe(dataframe)
+                cols_to_add = self.configs.find_diff_between_lists(PostgresUtils().grab_results_schema(),
+                                                                   dataframe.columns)
+                dataframe = self.dataframe_util.add_columns(dataframe, cols_to_add)
+                PostgresUtils().create_team_outcomes_table(dataframe)
+                PostgresUtils().upload_dataframe(dataframe[PostgresUtils().grab_results_schema()])
+
+        else:
+            dataframe = self.dataframe_util.union_dataframes()
+            PostgresUtils().create_team_outcomes_table(dataframe)
+            cols_to_add = self.configs.find_diff_between_lists(PostgresUtils().grab_results_schema(), dataframe.columns)
+            dataframe = self.dataframe_util.add_columns(dataframe, cols_to_add)
+            PostgresUtils().upload_dataframe(dataframe[PostgresUtils().grab_results_schema()])
+
+            self.dataframe_util.save_dataframe(dataframe, f"{self.configs.file_name}.csv")
+
+
+
+
 
 
