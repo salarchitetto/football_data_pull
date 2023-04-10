@@ -1,11 +1,10 @@
-import csv
 from typing import Type, List
-
+from datetime import datetime
 import pandas as pd
 from pandas import DataFrame
-
 from utilities.configurator import Configurator
 from warnings import simplefilter
+from dateutil.parser import parse
 
 simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 
@@ -19,7 +18,7 @@ class DataframeUtil:
         self.debug = []
         self.div = "div"
         self.string_columns = ["Div", "Date", "Time", "HomeTeam", "AwayTeam", "FTR", "HTR"]
-
+        self.now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
 
     @staticmethod
     def get_dataframe(path) -> pd.DataFrame:
@@ -58,10 +57,30 @@ class DataframeUtil:
         dataframe = dataframe.loc[:, ~dataframe.columns.str.startswith("Unnamed")]
         dataframe = dataframe.replace("#", None)
 
+        """
+        Unfortunately the people who curate this data think having four different timestamps 
+        is the way to go... maybe this will go away if I decide to convert to a spark 
+        application but doubt it. (pain)
+        """
+        dataframe_us_full_year = pd.to_datetime(dataframe["date"], format="%m/%d/%Y", errors='coerce')
+        dataframe_eu_full_year = pd.to_datetime(dataframe["date"], format="%d/%m/%Y", errors='coerce')
+        dataframe_us_half_year = pd.to_datetime(dataframe["date"], format="%m/%d/%y", errors='coerce')
+        dataframe_eu_half_year = pd.to_datetime(dataframe["date"], format="%d/%m/%y", errors='coerce')
+        final_dataframe = dataframe.copy()
+        final_dataframe["date"] = dataframe_eu_full_year.fillna(dataframe_us_full_year).fillna(dataframe_eu_half_year).fillna(
+            dataframe_us_half_year)
+        return final_dataframe
+
+    def add_high_watermark(self, dataframe: pd.DataFrame) -> DataFrame:
+        dataframe["high_water_mark"] = self.now
+        return dataframe
+
+    @staticmethod
+    def high_water_mark_filter(dataframe: pd.DataFrame, previous_time_stamp: str) -> DataFrame:
+        dataframe = dataframe[dataframe.high_water_mark > previous_time_stamp]
         return dataframe
 
     @staticmethod
     def add_columns(dataframe: Type[DataFrame], cols_to_add: List[str]):
         dataframe[cols_to_add] = None
         return dataframe
-

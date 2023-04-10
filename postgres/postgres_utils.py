@@ -104,12 +104,19 @@ class PostgresUtils:
 
         return self.type_checker(dtypes)
 
+    def get_high_water_mark_time(self, league_name: str) -> str:
+        # Use this to get the high water-mark column for a given league
+        query = """
+            
+        """
+
     @staticmethod
     def type_checker(dtype_list: List[str]) -> List[str]:
         return list(map(lambda x: x.
                         replace("object", "text")
                         .replace("float64", "float")
-                        .replace("int64", "integer"),
+                        .replace("int64", "integer")
+                        .replace("datetime64[ns]", "timestamp"),
                         dtype_list))
 
     @staticmethod

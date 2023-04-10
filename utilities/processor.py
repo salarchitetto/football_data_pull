@@ -1,6 +1,5 @@
 from postgres.postgres_utils import PostgresUtils
 from utilities.configurator import Configurator
-import pandas as pd
 from utilities.dataframe_util import DataframeUtil
 
 
@@ -12,7 +11,7 @@ class Processor:
         self.dataframe_util = dataframe_util
         self.dataframes = []
 
-    def process(self) -> None:
+    def process_back_fill(self) -> None:
         self.configs.create_years_list()
         self.configs.list_checker()
         self.configs.create_csv_names()
@@ -31,7 +30,6 @@ class Processor:
             dataframe = self.dataframe_util.union_dataframes()
             PostgresUtils().create_team_outcomes_table(dataframe)
             PostgresUtils().upload_dataframe(dataframe)
-            self.dataframe_util.save_dataframe(dataframe, f"{self.configs.file_name}.csv")
 
         elif self.configs.league_name in ["scot_prem", "serieb", "laliga2"]:
             for dataframe in self.dataframe_util.cleaned_dataframes:
@@ -39,7 +37,6 @@ class Processor:
                 cols_to_add = self.configs.find_diff_between_lists(PostgresUtils().grab_results_schema(),
                                                                    dataframe.columns)
                 dataframe = self.dataframe_util.add_columns(dataframe, cols_to_add)
-                PostgresUtils().create_team_outcomes_table(dataframe)
                 PostgresUtils().upload_dataframe(dataframe[PostgresUtils().grab_results_schema()])
 
         else:
@@ -48,11 +45,3 @@ class Processor:
             cols_to_add = self.configs.find_diff_between_lists(PostgresUtils().grab_results_schema(), dataframe.columns)
             dataframe = self.dataframe_util.add_columns(dataframe, cols_to_add)
             PostgresUtils().upload_dataframe(dataframe[PostgresUtils().grab_results_schema()])
-
-            self.dataframe_util.save_dataframe(dataframe, f"{self.configs.file_name}.csv")
-
-
-
-
-
-
