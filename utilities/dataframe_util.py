@@ -18,7 +18,7 @@ class DataframeUtil:
         self.debug = []
         self.div = "div"
         self.string_columns = ["Div", "Date", "Time", "HomeTeam", "AwayTeam", "FTR", "HTR"]
-        self.now = datetime.now().strftime("%d/%m/%Y %H:%M:%S")
+        self.now = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
 
     @staticmethod
     def get_dataframe(path) -> pd.DataFrame:
@@ -45,12 +45,12 @@ class DataframeUtil:
     def append_dataframe_to_list(self, path: str) -> None:
         self.dataframes.append(self.get_dataframe(path))
 
-    def union_dataframes(self) -> Type[DataFrame]:
+    def union_dataframes(self) -> DataFrame:
         print("Concatenating Dataframes")
         dataframe = pd.concat(self.cleaned_dataframes)
         return self.clean_dataframe(dataframe)
 
-    def clean_dataframe(self, dataframe: pd.DataFrame) -> Type[DataFrame]:
+    def clean_dataframe(self, dataframe: pd.DataFrame) -> DataFrame:
         dataframe.columns = map(str.lower, dataframe.columns)
         dataframe[self.div] = self.configs.file_name
         dataframe = dataframe.loc[:, ~dataframe.columns.str.startswith("unnamed")]
@@ -69,7 +69,8 @@ class DataframeUtil:
         final_dataframe = dataframe.copy()
         final_dataframe["date"] = dataframe_eu_full_year.fillna(dataframe_us_full_year).fillna(dataframe_eu_half_year).fillna(
             dataframe_us_half_year)
-        return final_dataframe
+
+        return self.add_high_watermark(final_dataframe)
 
     def add_high_watermark(self, dataframe: pd.DataFrame) -> DataFrame:
         dataframe["high_water_mark"] = self.now
@@ -77,10 +78,10 @@ class DataframeUtil:
 
     @staticmethod
     def high_water_mark_filter(dataframe: pd.DataFrame, previous_time_stamp: str) -> DataFrame:
-        dataframe = dataframe[dataframe.high_water_mark > previous_time_stamp]
+        dataframe = dataframe[dataframe.date > previous_time_stamp]
         return dataframe
 
     @staticmethod
-    def add_columns(dataframe: Type[DataFrame], cols_to_add: List[str]):
+    def add_columns(dataframe: DataFrame, cols_to_add: List[str]):
         dataframe[cols_to_add] = None
         return dataframe

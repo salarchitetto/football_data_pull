@@ -106,9 +106,11 @@ class PostgresUtils:
 
     def get_high_water_mark_time(self, league_name: str) -> str:
         # Use this to get the high water-mark column for a given league
-        query = """
-            
+        query = f"""
+            select max(date) from results where div = '{league_name}'
         """
+
+        return str(self.grab_data(query)[0][0])
 
     @staticmethod
     def type_checker(dtype_list: List[str]) -> List[str]:

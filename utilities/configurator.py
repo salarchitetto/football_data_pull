@@ -32,6 +32,9 @@ class Configurator:
     def create_years_list(self) -> List[str]:
         return [str(x) + str(y) for x, y in zip(self.year_start, self.year_end)]
 
+    def get_this_season(self) -> str:
+        return self.create_years_list()[0]
+
     def list_checker(self) -> None:
         for year in self.create_years_list():
             match len(year):
@@ -44,10 +47,14 @@ class Configurator:
                 case _:
                     self.list_of_years.append("0001")
 
-    def link_to_download_path(self) -> List[str]:
-        for amended_year in self.list_of_years:
-            self.download_paths \
-                .append(f"{self.download_link}/{self.link_constant}/{amended_year}/{self.excel_path}.csv")
+    def link_to_download_path(self, back_fill=False) -> List[str]:
+        if back_fill:
+            for amended_year in self.list_of_years:
+                self.download_paths \
+                    .append(f"{self.download_link}/{self.link_constant}/{amended_year}/{self.excel_path}.csv")
+        else:
+            self.download_paths\
+                .append(f"{self.download_link}/{self.link_constant}/{self.get_this_season()}/{self.excel_path}.csv")
 
         return self.download_paths
 

@@ -9,39 +9,16 @@ class Processor:
                  dataframe_util: DataframeUtil):
         self.configs = configs
         self.dataframe_util = dataframe_util
-        self.dataframes = []
+        self.postgres = PostgresUtils()
 
-    def process_back_fill(self) -> None:
-        self.configs.create_years_list()
-        self.configs.list_checker()
-        self.configs.create_csv_names()
-        download_paths = self.configs.link_to_download_path()
-        print(download_paths)
+    def process(self):
+        path = self.configs.link_to_download_path()[0]
+        dataframe = self.dataframe_util.clean_dataframe(self.dataframe_util.get_dataframe(path))
 
-        for path, csv_name in zip(download_paths, self.configs.csv_names):
-            print(f"Appending dataframe to list: {path}")
-            self.dataframe_util.append_dataframe_to_list(path)
+        previous_run_time = self.postgres.get_high_water_mark_time(league_name=self.configs.file_name)
+        filtered_dataframe = self.dataframe_util.high_water_mark_filter(dataframe, previous_run_time)
 
-        self.dataframe_util.find_all_column_names()
-        for dataframe in self.dataframe_util.dataframes:
-            self.dataframe_util.add_missing_columns_to_dataframe(dataframe)
-
-        if self.configs.league_name == "premier_league":
-            dataframe = self.dataframe_util.union_dataframes()
-            PostgresUtils().create_team_outcomes_table(dataframe)
-            PostgresUtils().upload_dataframe(dataframe)
-
-        elif self.configs.league_name in ["scot_prem", "serieb", "laliga2"]:
-            for dataframe in self.dataframe_util.cleaned_dataframes:
-                dataframe = self.dataframe_util.clean_dataframe(dataframe)
-                cols_to_add = self.configs.find_diff_between_lists(PostgresUtils().grab_results_schema(),
-                                                                   dataframe.columns)
-                dataframe = self.dataframe_util.add_columns(dataframe, cols_to_add)
-                PostgresUtils().upload_dataframe(dataframe[PostgresUtils().grab_results_schema()])
-
+        if filtered_dataframe.empty:
+            print("Dataframe is empty, will not attempt to write")
         else:
-            dataframe = self.dataframe_util.union_dataframes()
-            PostgresUtils().create_team_outcomes_table(dataframe)
-            cols_to_add = self.configs.find_diff_between_lists(PostgresUtils().grab_results_schema(), dataframe.columns)
-            dataframe = self.dataframe_util.add_columns(dataframe, cols_to_add)
-            PostgresUtils().upload_dataframe(dataframe[PostgresUtils().grab_results_schema()])
+            PostgresUtils().upload_dataframe(filtered_dataframe)
