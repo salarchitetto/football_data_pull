@@ -1,5 +1,4 @@
 from configs import Variables
-from postgres.postgres_utils import PostgresUtils
 from utilities.dataframe_util import DataframeUtil
 from utilities.processor import Processor
 from utilities.configurator import Configurator

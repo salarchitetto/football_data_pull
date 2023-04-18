@@ -1,10 +1,9 @@
-from typing import Type, List
+from typing import List
 from datetime import datetime
 import pandas as pd
 from pandas import DataFrame
 from utilities.configurator import Configurator
 from warnings import simplefilter
-from dateutil.parser import parse
 
 simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 
