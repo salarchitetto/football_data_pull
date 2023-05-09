@@ -11,10 +11,6 @@ simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 class DataframeUtil:
     def __init__(self, configs: Configurator = None):
         self.configs = configs
-        self.dataframes = []
-        self.columns = set()
-        self.cleaned_dataframes = []
-        self.debug = []
         self.div = "div"
         self.string_columns = ["Div", "Date", "Time", "HomeTeam", "AwayTeam", "FTR", "HTR"]
         self.now = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
@@ -23,35 +19,37 @@ class DataframeUtil:
     def get_dataframe(path) -> pd.DataFrame:
         return pd.read_csv(path, encoding='windows-1252', on_bad_lines='skip')
 
-    def save_dataframe(self, dataframe, csv_name: str) -> None:
-        print(f"Saving Dataframe to path: {self.configs.get_directory}/{csv_name}")
-        print(dataframe.columns)
-        dataframe.to_csv(f"{self.configs.get_directory}/{csv_name}")
+    @staticmethod
+    def find_all_column_names(dataframes: List[DataFrame]) -> set[str]:
+        cols = []
+        for dataframe in dataframes:
+            for columns in dataframe.columns:
+                cols.append(columns)
 
-    def find_all_column_names(self) -> None:
-        for dataframes in self.dataframes:
-            for columns in dataframes.columns:
-                self.columns.add(columns)
+        return set(cols)
 
-    def add_missing_columns_to_dataframe(self, dataframe: pd.DataFrame) -> None:
+    @staticmethod
+    def add_missing_columns_to_dataframe(columns: set[str], dataframes: List[DataFrame]) -> List[DataFrame]:
+        cleaned_dataframes = []
+        for dataframe in dataframes:
+            missing_columns = columns.difference(set(dataframe.columns.values))
+            print(f"Missing Columns for dataframe: {missing_columns}")
+            dataframe[list(missing_columns)] = None
+            cleaned_dataframes.append(dataframe)
 
-        missing_columns = self.columns.difference(set(dataframe.columns.values))
-        print(f"Missing Columns for dataframe: {missing_columns}")
+        return cleaned_dataframes
 
-        dataframe[list(missing_columns)] = None
-        self.cleaned_dataframes.append(dataframe)
+    def create_dataframe_list(self, paths: List[str]) -> List[DataFrame]:
+        return [self.get_dataframe(path) for path in paths]
 
-    def append_dataframe_to_list(self, path: str) -> None:
-        self.dataframes.append(self.get_dataframe(path))
-
-    def union_dataframes(self) -> DataFrame:
+    def union_dataframes(self, dataframes: List[DataFrame]) -> DataFrame:
         print("Concatenating Dataframes")
-        dataframe = pd.concat(self.cleaned_dataframes)
+        dataframe = pd.concat(dataframes)
         return self.clean_dataframe(dataframe)
 
     def clean_dataframe(self, dataframe: pd.DataFrame) -> DataFrame:
         dataframe.columns = map(str.lower, dataframe.columns)
-        dataframe[self.div] = self.configs.file_name
+        dataframe[self.div] = self.configs.league_name
         dataframe = dataframe.loc[:, ~dataframe.columns.str.startswith("unnamed")]
         dataframe = dataframe.loc[:, ~dataframe.columns.str.startswith("Unnamed")]
         dataframe = dataframe.replace("#", None)
@@ -66,7 +64,8 @@ class DataframeUtil:
         dataframe_us_half_year = pd.to_datetime(dataframe["date"], format="%m/%d/%y", errors='coerce')
         dataframe_eu_half_year = pd.to_datetime(dataframe["date"], format="%d/%m/%y", errors='coerce')
         final_dataframe = dataframe.copy()
-        final_dataframe["date"] = dataframe_eu_full_year.fillna(dataframe_us_full_year).fillna(dataframe_eu_half_year).fillna(
+        final_dataframe["date"] = dataframe_eu_full_year.fillna(dataframe_us_full_year).fillna(
+            dataframe_eu_half_year).fillna(
             dataframe_us_half_year)
 
         return self.add_high_watermark(final_dataframe)
@@ -74,6 +73,14 @@ class DataframeUtil:
     def add_high_watermark(self, dataframe: pd.DataFrame) -> DataFrame:
         dataframe["high_water_mark"] = self.now
         return dataframe
+
+    def grab_dtypes(self, dataframe: pd.DataFrame) -> List[str]:
+
+        dtypes = []
+        for keys, values in dataframe.dtypes.items():
+            dtypes.append(values.name)
+
+        return self.type_checker(dtypes)
 
     @staticmethod
     def high_water_mark_filter(dataframe: pd.DataFrame, previous_time_stamp: str) -> DataFrame:
@@ -84,3 +91,16 @@ class DataframeUtil:
     def add_columns(dataframe: DataFrame, cols_to_add: List[str]):
         dataframe[cols_to_add] = None
         return dataframe
+
+    @staticmethod
+    def type_checker(dtype_list: List[str]) -> List[str]:
+        return list(map(lambda x: x.
+                        replace("object", "text")
+                        .replace("float64", "float")
+                        .replace("int64", "integer")
+                        .replace("datetime64[ns]", "timestamp"),
+                        dtype_list))
+
+    @staticmethod
+    def remove_unnamed_from_column_name(dataframe: pd.DataFrame) -> pd.DataFrame:
+        return dataframe.loc[:, ~dataframe.columns.str.startswith("Unnamed")]

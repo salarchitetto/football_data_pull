@@ -1,67 +1,42 @@
 from typing import List
-from configs import Variables
 
 
 class Configurator:
-    def __init__(self, country: str, league_name: str, excel_path: str, file_name: str):
-        self.country = country
-        self.league_name = league_name
-        self.excel_path = excel_path
-        self.file_name = file_name
+    def __init__(self):
+        self.country = None
+        self.league_name = None
+        self.excel_path = None
         self.download_link = "https://www.football-data.co.uk"
         self.link_constant = "mmz4281"
-        self.year_end = range(23, -1, -1)
-        self.year_start = range(22, -1, -1)
-        self.list_of_years = []
-        self.download_paths = []
-        self.vars = Variables()
-        self.file_path = "footy_dash_data"
-        self.csv_names = []
 
-    def __repr__(self):
-        return ""
+    @property
+    def country(self):
+        return self._country
+
+    @country.setter
+    def country(self, value):
+        self._country = value
+
+    @property
+    def excel_path(self):
+        return self._excel_path
+
+    @excel_path.setter
+    def excel_path(self, value):
+        self._excel_path = value
+
+    @property
+    def league_name(self):
+        return self._league_name
+
+    @league_name.setter
+    def league_name(self, value):
+        self._league_name = value
 
     @property
     def create_country_link(self) -> str:
         return f"{self.download_link}/{self.country}m.php"
 
-    @property
-    def get_directory(self) -> str:
-        return f"{self.file_path}/{self.league_name}"
-
-    def create_years_list(self) -> List[str]:
-        return [str(x) + str(y) for x, y in zip(self.year_start, self.year_end)]
-
-    def get_this_season(self) -> str:
-        return self.create_years_list()[0]
-
-    def list_checker(self) -> None:
-        for year in self.create_years_list():
-            match len(year):
-                case 4:
-                    self.list_of_years.append(year)
-                case 3:
-                    self.list_of_years.append(f"0{year}")
-                case 2:
-                    self.list_of_years.append(f"0{year[0]}0{year[1]}")
-                case _:
-                    self.list_of_years.append("0001")
-
-    def link_to_download_path(self, back_fill=False) -> List[str]:
-        if back_fill:
-            for amended_year in self.list_of_years:
-                self.download_paths \
-                    .append(f"{self.download_link}/{self.link_constant}/{amended_year}/{self.excel_path}.csv")
-        else:
-            self.download_paths\
-                .append(f"{self.download_link}/{self.link_constant}/{self.get_this_season()}/{self.excel_path}.csv")
-
-        return self.download_paths
-
-    def create_csv_names(self):
-        for year in self.create_years_list():
-            self.csv_names.append(f"{self.league_name}_{year}.csv")
-
     @staticmethod
-    def find_diff_between_lists(list1: List[str], list2: List[str]):
+    def find_diff_between_lists(list1: List[str], list2: List[str]) -> List[str]:
         return list(set(list1) - set(list2))
