@@ -5,7 +5,7 @@ from utilities.configurator import Configurator
 import time
 
 if __name__ == "__main__":
-    PostgresUtils().execute("DROP TABLE results")
+    PostgresUtils().execute("DROP TABLE IF EXISTS results")
     configs = Configurator()
 
     for league in LeagueDictionary:
@@ -17,5 +17,5 @@ if __name__ == "__main__":
         configs.league_name = league.name.lower()
         configs.excel_path = league['excel_path']
         configs.file_name = league['file_name']
-        ProcessorBackFill(configs).process_back_fill()
+        ProcessorBackFill(configs, "results").process_back_fill()
         print("--- %s seconds ---" % (time.time() - start_time))

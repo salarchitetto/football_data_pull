@@ -33,7 +33,6 @@ class DataframeUtil:
         cleaned_dataframes = []
         for dataframe in dataframes:
             missing_columns = columns.difference(set(dataframe.columns.values))
-            print(f"Missing Columns for dataframe: {missing_columns}")
             dataframe[list(missing_columns)] = None
             cleaned_dataframes.append(dataframe)
 
@@ -49,7 +48,7 @@ class DataframeUtil:
 
     def clean_dataframe(self, dataframe: pd.DataFrame) -> DataFrame:
         dataframe.columns = map(str.lower, dataframe.columns)
-        dataframe[self.div] = self.configs.league_name
+        dataframe[self.div] = self.configs.file_name
         dataframe = dataframe.loc[:, ~dataframe.columns.str.startswith("unnamed")]
         dataframe = dataframe.loc[:, ~dataframe.columns.str.startswith("Unnamed")]
         dataframe = dataframe.replace("#", None)

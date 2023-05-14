@@ -6,6 +6,7 @@ class Configurator:
         self.country = None
         self.league_name = None
         self.excel_path = None
+        self.file_name = None
         self.download_link = "https://www.football-data.co.uk"
         self.link_constant = "mmz4281"
 
@@ -32,6 +33,14 @@ class Configurator:
     @league_name.setter
     def league_name(self, value):
         self._league_name = value
+
+    @property
+    def file_name(self):
+        return self._file_name
+
+    @file_name.setter
+    def file_name(self, value):
+        self._file_name = value
 
     @property
     def create_country_link(self) -> str:

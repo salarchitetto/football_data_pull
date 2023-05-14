@@ -1,6 +1,6 @@
 from typing import List
 from sqlalchemy import create_engine
-import pandas as pd
+from dotenv import load_dotenv
 import psycopg2
 import os
 
@@ -14,8 +14,9 @@ class PostgresUtils:
         self.league = league
         self.db_name = "footy"
         self.host = "localhost"
-        self.user = os.environ["DB_USER"]
-        self.password = os.environ["DB_PASSWORD"]
+        self.dotEnv = load_dotenv()
+        self.user = os.getenv("POSTGRES_USERNAME")
+        self.password = os.getenv("POSTGRES_PASSWORD")
 
     def connection(self):
         try:
@@ -66,10 +67,10 @@ class PostgresUtils:
         """
         self.execute(query)
 
-    def upload_dataframe(self, dataframe) -> None:
+    def upload_dataframe(self, dataframe, table_name: str) -> None:
         try:
-            print(f"Writing Dataframe to postgres table {self.db_name}.{self.outcomes_table}")
-            dataframe.to_sql(name=self.outcomes_table, con=self.create_engine(), if_exists="append", index=False)
+            print(f"Writing Dataframe to postgres table {self.db_name}.{table_name}")
+            dataframe.to_sql(name=table_name, con=self.create_engine(), if_exists="append", index=False)
             self.connection().commit()
             self.connection().close()
         except Exception as e:
