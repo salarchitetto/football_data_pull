@@ -10,6 +10,9 @@ class ProcessorBackFill:
                  configs: Configurator, table_name: str):
         self.configs = configs
         self.table_name = table_name
+        self.checks = [LeagueDictionary.SERIEB.name.lower(),
+                       LeagueDictionary.LALIGA2.name.lower(),
+                       LeagueDictionary.SCOT_PREM.name.lower()]
 
     def process_back_fill(self) -> None:
         dataframe_util = DataframeUtil(self.configs)
@@ -22,22 +25,22 @@ class ProcessorBackFill:
         if self.configs.league_name == LeagueDictionary.PREMIER_LEAGUE.name.lower():
             dataframe = dataframe_util.union_dataframes(cleaned_dataframes)
             PostgresUtils().create_table_from_existing_dataframe(dataframe, self.table_name)
-            PostgresUtils().upload_dataframe(dataframe, "results")
+            PostgresUtils().upload_dataframe(dataframe, self.table_name)
 
-        elif self.configs.league_name.name in [LeagueDictionary.SCOT_PREM.name,
-                                               LeagueDictionary.SERIEB.name,
-                                               LeagueDictionary.LALIGA2.name]:
+        elif self.configs.league_name in self.checks:
             for dataframe in cleaned_dataframes:
                 dataframe = dataframe_util.clean_dataframe(dataframe)
                 cols_to_add = self.configs.find_diff_between_lists(PostgresUtils()
                                                                    .grab_results_schema(self.table_name),
                                                                    dataframe.columns)
                 dataframe = dataframe_util.add_columns(dataframe, cols_to_add)
-                PostgresUtils().upload_dataframe(dataframe[PostgresUtils().grab_results_schema(self.table_name)], "results")
+                PostgresUtils().upload_dataframe(dataframe[PostgresUtils()
+                                                 .grab_results_schema(self.table_name)], self.table_name)
 
         else:
             dataframe = dataframe_util.union_dataframes(dataframes)
             cols_to_add = self.configs.find_diff_between_lists\
                 (PostgresUtils().grab_results_schema(self.table_name), dataframe.columns)
             dataframe = dataframe_util.add_columns(dataframe, cols_to_add)
-            PostgresUtils().upload_dataframe(dataframe[PostgresUtils().grab_results_schema(self.table_name)], "results")
+            PostgresUtils().upload_dataframe(dataframe[PostgresUtils()
+                                             .grab_results_schema(self.table_name)], self.table_name)

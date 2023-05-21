@@ -1,5 +1,6 @@
 from typing import List
 from sqlalchemy import create_engine
+from dotenv import load_dotenv
 import psycopg2
 import os
 from utilities.dataframe_util import DataframeUtil
@@ -13,8 +14,9 @@ class PostgresUtils:
         self.league = league
         self.db_name = "footy"
         self.host = "localhost"
-        self.user = os.environ["DB_USER"]
-        self.password = os.environ["DB_PASSWORD"]
+        self.dotEnv = load_dotenv()
+        self.user = os.getenv("POSTGRES_USERNAME")
+        self.password = os.getenv("POSTGRES_PASSWORD")
         self.logger = Logger(logger_name="PostgresUtils")
 
     def connection(self):
