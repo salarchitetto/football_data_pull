@@ -1,10 +1,9 @@
 from typing import List
 from sqlalchemy import create_engine
-import pandas as pd
 import psycopg2
 import os
-
 from utilities.dataframe_util import DataframeUtil
+from utilities.logger import Logger
 
 
 class PostgresUtils:
@@ -16,6 +15,7 @@ class PostgresUtils:
         self.host = "localhost"
         self.user = os.environ["DB_USER"]
         self.password = os.environ["DB_PASSWORD"]
+        self.logger = Logger(logger_name="PostgresUtils")
 
     def connection(self):
         try:
@@ -26,7 +26,7 @@ class PostgresUtils:
                 password=self.password
             )
         except psycopg2.Error as e:
-            print(f"An error has occurred connecting to postgres: {e}")
+            self.logger.error(f"An error has occurred connecting to postgres: {e}")
 
     def create_engine(self):
         return create_engine(f"postgresql://{self.user}:{self.password}@localhost:5432/{self.db_name}")
@@ -36,11 +36,11 @@ class PostgresUtils:
         cursor = connection.cursor()
 
         try:
-            print(f"executing query: {query}")
+            self.logger.info(f"executing query: {query}")
             cursor.execute(query)
             connection.commit()
         except Exception as e:
-            print(f"An error has occurred executing the query provided: {e}")
+            self.logger.error(f"An error has occurred executing the query provided: {e}")
 
     def grab_data(self, query: str):
         connection = self.connection()
@@ -51,7 +51,7 @@ class PostgresUtils:
 
             return cursor.fetchall()
         except Exception as e:
-            print(f"An error has occurred: {e}")
+            self.logger.error(f"An error has occurred: {e}")
 
     # TODO: Move this to other Class, this should just be a create table method or something
     def create_table_from_existing_dataframe(self, dataframe, table_name: str) -> None:
@@ -66,14 +66,14 @@ class PostgresUtils:
         """
         self.execute(query)
 
-    def upload_dataframe(self, dataframe) -> None:
+    def upload_dataframe(self, dataframe, table_name: str) -> None:
         try:
-            print(f"Writing Dataframe to postgres table {self.db_name}.{self.outcomes_table}")
-            dataframe.to_sql(name=self.outcomes_table, con=self.create_engine(), if_exists="append", index=False)
+            self.logger.info(f"Writing Dataframe to postgres table {self.db_name}.{table_name}")
+            dataframe.to_sql(name=table_name, con=self.create_engine(), if_exists="append", index=False)
             self.connection().commit()
             self.connection().close()
         except Exception as e:
-            print(f"An error has occurred: {e}")
+            self.logger.error(f"An error has occurred: {e}")
 
     def grab_results_schema(self, table_name: str) -> List[str]:
         query = f"""

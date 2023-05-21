@@ -22,7 +22,7 @@ class ProcessorBackFill:
         if self.configs.league_name == LeagueDictionary.PREMIER_LEAGUE.name.lower():
             dataframe = dataframe_util.union_dataframes(cleaned_dataframes)
             PostgresUtils().create_table_from_existing_dataframe(dataframe, self.table_name)
-            PostgresUtils().upload_dataframe(dataframe)
+            PostgresUtils().upload_dataframe(dataframe, "results")
 
         elif self.configs.league_name.name in [LeagueDictionary.SCOT_PREM.name,
                                                LeagueDictionary.SERIEB.name,
@@ -33,11 +33,11 @@ class ProcessorBackFill:
                                                                    .grab_results_schema(self.table_name),
                                                                    dataframe.columns)
                 dataframe = dataframe_util.add_columns(dataframe, cols_to_add)
-                PostgresUtils().upload_dataframe(dataframe[PostgresUtils().grab_results_schema(self.table_name)])
+                PostgresUtils().upload_dataframe(dataframe[PostgresUtils().grab_results_schema(self.table_name)], "results")
 
         else:
             dataframe = dataframe_util.union_dataframes(dataframes)
             cols_to_add = self.configs.find_diff_between_lists\
                 (PostgresUtils().grab_results_schema(self.table_name), dataframe.columns)
             dataframe = dataframe_util.add_columns(dataframe, cols_to_add)
-            PostgresUtils().upload_dataframe(dataframe[PostgresUtils().grab_results_schema(self.table_name)])
+            PostgresUtils().upload_dataframe(dataframe[PostgresUtils().grab_results_schema(self.table_name)], "results")

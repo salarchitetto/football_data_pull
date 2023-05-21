@@ -5,6 +5,8 @@ from pandas import DataFrame
 from utilities.configurator import Configurator
 from warnings import simplefilter
 
+from utilities.logger import Logger
+
 simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 
 
@@ -14,6 +16,7 @@ class DataframeUtil:
         self.div = "div"
         self.string_columns = ["Div", "Date", "Time", "HomeTeam", "AwayTeam", "FTR", "HTR"]
         self.now = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
+        self.logger = Logger(logger_name="DataframeUtil")
 
     @staticmethod
     def get_dataframe(path) -> pd.DataFrame:
@@ -28,12 +31,11 @@ class DataframeUtil:
 
         return set(cols)
 
-    @staticmethod
-    def add_missing_columns_to_dataframe(columns: set[str], dataframes: List[DataFrame]) -> List[DataFrame]:
+    def add_missing_columns_to_dataframe(self, columns: set[str], dataframes: List[DataFrame]) -> List[DataFrame]:
         cleaned_dataframes = []
         for dataframe in dataframes:
             missing_columns = columns.difference(set(dataframe.columns.values))
-            print(f"Missing Columns for dataframe: {missing_columns}")
+            self.logger.info(f"Missing Columns for dataframe: {missing_columns}")
             dataframe[list(missing_columns)] = None
             cleaned_dataframes.append(dataframe)
 
@@ -43,7 +45,7 @@ class DataframeUtil:
         return [self.get_dataframe(path) for path in paths]
 
     def union_dataframes(self, dataframes: List[DataFrame]) -> DataFrame:
-        print("Concatenating Dataframes")
+        self.logger.info("Concatenating Dataframes")
         dataframe = pd.concat(dataframes)
         return self.clean_dataframe(dataframe)
 

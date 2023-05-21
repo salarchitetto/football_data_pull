@@ -1,5 +1,7 @@
 from typing import List
 
+from utilities.logger import Logger
+
 
 class Configurator:
     def __init__(self):
@@ -8,6 +10,7 @@ class Configurator:
         self.excel_path = None
         self.download_link = "https://www.football-data.co.uk"
         self.link_constant = "mmz4281"
+        self.logger = Logger(logger_name="Configurator")
 
     @property
     def country(self):

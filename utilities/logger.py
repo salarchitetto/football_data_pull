@@ -1,7 +1,7 @@
 import structlog
 
 
-class MyLogger:
+class Logger:
     def __init__(self, logger_name: str):
         self.logger = structlog.get_logger(logger_name=logger_name)
         structlog.wrap_logger(self.logger,
@@ -11,7 +11,7 @@ class MyLogger:
                                   structlog.stdlib.filter_by_level,
                                   structlog.stdlib.add_log_level,
                                   structlog.stdlib.add_logger_name,
-                                  structlog.dev.ConsoleRenderer(),
+                                  structlog.dev.ConsoleRenderer(colors=True),
                                   structlog.processors.JSONRenderer(),
                                   structlog.processors.format_exc_info])
 
@@ -23,9 +23,3 @@ class MyLogger:
 
     def error(self, message, **kwargs):
         self.logger.error(message, **kwargs)
-
-
-logger = MyLogger(logger_name="test")
-
-logger.info("Hello, world!", foo="bar", count=42)
-logger.error("Shit, Its Broken!", foo="ass", count=1000)

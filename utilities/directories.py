@@ -1,11 +1,14 @@
 from typing import Dict, List
 import os
 
+from utilities.logger import Logger
+
 
 class Directories:
     def __init__(self, dictionary: Dict):
         self.dictionary = dictionary
         self.file_path = "footy_dash_data"
+        self.logger = Logger(logger_name="Directories")
 
     def create_initial_folder(self):
         os.mkdir(self.file_path)

@@ -1,6 +1,7 @@
 from postgres.postgres_utils import PostgresUtils
 from utilities.configurator import Configurator
 from utilities.dataframe_util import DataframeUtil
+from utilities.logger import Logger
 from utilities.season_dates import SeasonDates
 
 
@@ -8,6 +9,7 @@ class Processor:
     def __init__(self,
                  configs: Configurator):
         self.configs = configs
+        self.logger = Logger(logger_name="Processor")
 
     def process(self):
         dataframe_util = DataframeUtil(self.configs)
@@ -22,6 +24,6 @@ class Processor:
         filtered_dataframe = dataframe_util.high_water_mark_filter(dataframe, previous_run_time)
 
         if filtered_dataframe.empty:
-            print("Dataframe is empty, will not attempt to write")
+            self.logger.info("Dataframe is empty, will not attempt to write")
         else:
-            postgres.upload_dataframe(filtered_dataframe)
+            postgres.upload_dataframe(filtered_dataframe, "results")
