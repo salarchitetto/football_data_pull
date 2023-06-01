@@ -14,7 +14,6 @@ class Processor:
     def process(self):
         dataframe_util = DataframeUtil(self.configs)
         postgres = PostgresUtils()
-
         path_to_csv_link = SeasonDates(self.configs).get_current_season_download_path()
 
         dataframe = dataframe_util.clean_dataframe(dataframe_util.get_dataframe(path_to_csv_link))

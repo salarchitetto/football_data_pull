@@ -12,10 +12,10 @@ class PostgresUtils:
     def __init__(self, _all: bool = True, league: str = None):
         self._all = all
         self.league = league
-        self.db_name = "footy"
-        self.host = "localhost"
         self.dotEnv = load_dotenv()
-        self.user = os.getenv("POSTGRES_USERNAME")
+        self.db_name = os.getenv("POSTGRES_DB")
+        self.host = os.getenv("POSTGRES_HOST")
+        self.user = os.getenv("POSTGRES_USER")
         self.password = os.getenv("POSTGRES_PASSWORD")
         self.logger = Logger(logger_name="PostgresUtils")
 
@@ -25,13 +25,14 @@ class PostgresUtils:
                 host=self.host,
                 database=self.db_name,
                 user=self.user,
-                password=self.password
+                password=self.password,
+                port=5432
             )
         except psycopg2.Error as e:
             self.logger.error(f"An error has occurred connecting to postgres: {e}")
 
     def create_engine(self):
-        return create_engine(f"postgresql://{self.user}:{self.password}@localhost:5432/{self.db_name}")
+        return create_engine(f"postgresql://{self.user}:{self.password}@{self.host}:5432/{self.db_name}")
 
     def execute(self, query: str) -> None:
         connection = self.connection()
@@ -77,7 +78,7 @@ class PostgresUtils:
         except Exception as e:
             self.logger.error(f"An error has occurred: {e}")
 
-    def grab_results_schema(self, table_name: str) -> List[str]:
+    def grab_table_schema(self, table_name: str) -> List[str]:
         query = f"""
             select column_name from information_schema.columns 
             where table_name='{table_name}';
