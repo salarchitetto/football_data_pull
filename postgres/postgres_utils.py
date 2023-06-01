@@ -17,6 +17,7 @@ class PostgresUtils:
         self.host = os.getenv("POSTGRES_HOST")
         self.user = os.getenv("POSTGRES_USER")
         self.password = os.getenv("POSTGRES_PASSWORD")
+        self.port = os.getenv("POSTGRES_PORT")
         self.logger = Logger(logger_name="PostgresUtils")
 
     def connection(self):
@@ -26,13 +27,13 @@ class PostgresUtils:
                 database=self.db_name,
                 user=self.user,
                 password=self.password,
-                port=5432
+                port=self.port
             )
         except psycopg2.Error as e:
             self.logger.error(f"An error has occurred connecting to postgres: {e}")
 
     def create_engine(self):
-        return create_engine(f"postgresql://{self.user}:{self.password}@{self.host}:5432/{self.db_name}")
+        return create_engine(f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.db_name}")
 
     def execute(self, query: str) -> None:
         connection = self.connection()
