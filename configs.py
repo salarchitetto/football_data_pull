@@ -1,4 +1,5 @@
 from enum import Enum
+from typing import Final
 
 
 class LeagueDictionary(dict, Enum):
@@ -17,3 +18,40 @@ class LeagueDictionary(dict, Enum):
     NETHERLANDS = {"excel_path": "N1", "file_name": "eredivisie", "country": "Netherlands"}
     BELGIUM = {"excel_path": "B1", "file_name": "belgian_pro_league", "country": "Belgium"}
     PORTUGAL = {"excel_path": "P1", "file_name": "liga_portugal", "country": "Portugal"}
+
+
+class TerminalColors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKCYAN = '\033[96m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+
+ascii_intro_footy: Final = (
+    """
+     _______   ______     ______   .___________.____    ____ 
+    |   ____| /  __  \   /  __  \  |           |\   \  /   / 
+    |  |__   |  |  |  | |  |  |  | `---|  |----` \   \/   /  
+    |   __|  |  |  |  | |  |  |  |     |  |       \_    _/   
+    |  |     |  `--'  | |  `--'  |     |  |         |  |     
+    |__|      \______/   \______/      |__|         |__|     
+                                                                                                                                                          
+    """
+)
+
+ascii_intro_dash: Final = (
+    """
+        _______       ___           _______. __    __  
+       |       \     /   \         /       ||  |  |  | 
+       |  .--.  |   /  ^  \       |   (----`|  |__|  | 
+       |  |  |  |  /  /_\  \       \   \    |   __   | 
+       |  '--'  | /  _____  \  .----)   |   |  |  |  | 
+       |_______/ /__/     \__\ |_______/    |__|  |__| 
+                                            
+    """
+)

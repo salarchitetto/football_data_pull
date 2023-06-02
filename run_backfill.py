@@ -1,4 +1,4 @@
-from configs import LeagueDictionary
+from configs import LeagueDictionary, ascii_intro, TerminalColors, ascii_intro_footy, ascii_intro_dash
 from postgres.postgres_utils import PostgresUtils
 from utilities.logger import Logger
 from utilities.process_backfill import ProcessorBackFill
@@ -10,6 +10,7 @@ if __name__ == "__main__":
     configs = Configurator()
 
     logger = Logger(logger_name="Back Fill Data Processor")
+    logger.info(f"{TerminalColors.OKCYAN}{ascii_intro_footy}{TerminalColors.ENDC}{ascii_intro_dash}")
 
     for league in LeagueDictionary:
         start_time = time.time()

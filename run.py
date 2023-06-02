@@ -1,4 +1,4 @@
-from configs import LeagueDictionary
+from configs import LeagueDictionary, ascii_intro_footy, TerminalColors, ascii_intro_dash
 from utilities.logger import Logger
 from utilities.processor import Processor
 from utilities.configurator import Configurator
@@ -8,6 +8,8 @@ if __name__ == "__main__":
 
     configs = Configurator()
     logger = Logger(logger_name="Data Processor")
+
+    logger.info(f"{TerminalColors.OKCYAN}{ascii_intro_footy}{TerminalColors.ENDC}{ascii_intro_dash}")
 
     for league in LeagueDictionary:
         start_time = time.time()
