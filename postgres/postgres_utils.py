@@ -90,7 +90,7 @@ class PostgresUtils:
     def get_high_water_mark_time(self, league_name: str, table_name: str) -> str:
         # Use this to get the high water-mark column for a given league
         query = f"""
-            select max(date) from {table_name} where div = '{league_name}'
+            select max(date) from {table_name} where division = '{league_name}'
         """
 
         return str(self.grab_data(query)[0][0])

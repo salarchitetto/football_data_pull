@@ -106,9 +106,9 @@ class DataframeUtil:
 
         return self.type_checker(dtypes)
 
-    @staticmethod
-    def high_water_mark_filter(dataframe: pd.DataFrame, previous_time_stamp: str) -> DataFrame:
-        dataframe = dataframe[dataframe.date > previous_time_stamp]
+    def high_water_mark_filter(self, dataframe: pd.DataFrame, previous_time_stamp: str) -> DataFrame:
+        self.logger.info(f"Previous timestamp: {previous_time_stamp}")
+        dataframe = dataframe[dataframe["date"] > previous_time_stamp]
         return dataframe
 
     @staticmethod
