@@ -45,3 +45,6 @@ class TestSeasonDates(unittest.TestCase):
     def test_multiple_season_download_paths(self):
         seasons = self.season_dates.get_multiple_season_download_paths(self.season_path_list_check)
         self.assertEqual(seasons, self.path_check_list)
+
+    def tearDown(self) -> None:
+        pass

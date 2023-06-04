@@ -1,4 +1,4 @@
-from configs import LeagueDictionary, ascii_intro, TerminalColors, ascii_intro_footy, ascii_intro_dash
+from configs import LeagueDictionary, TerminalColors, ascii_intro_footy, ascii_intro_dash
 from postgres.postgres_utils import PostgresUtils
 from utilities.logger import Logger
 from utilities.process_backfill import ProcessorBackFill

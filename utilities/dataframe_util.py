@@ -13,7 +13,7 @@ simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
 class DataframeUtil:
     def __init__(self, configs: Configurator = None):
         self.configs = configs
-        self.div = "div"
+        self.division = "division"
         self.string_columns = ["Div", "Date", "Time", "HomeTeam", "AwayTeam", "FTR", "HTR"]
         self.now = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
         self.logger = Logger(logger_name="DataframeUtil")
@@ -31,7 +31,8 @@ class DataframeUtil:
 
         return set(cols)
 
-    def add_missing_columns_to_dataframe(self, columns: set[str], dataframes: List[DataFrame]) -> List[DataFrame]:
+    @staticmethod
+    def add_missing_columns_to_dataframe(columns: set[str], dataframes: List[DataFrame]) -> List[DataFrame]:
         cleaned_dataframes = []
         for dataframe in dataframes:
             missing_columns = columns.difference(set(dataframe.columns.values))
@@ -48,26 +49,48 @@ class DataframeUtil:
         dataframe = pd.concat(dataframes)
         return self.clean_dataframe(dataframe)
 
-    def clean_dataframe(self, dataframe: pd.DataFrame) -> DataFrame:
-        dataframe.columns = map(str.lower, dataframe.columns)
-        dataframe[self.div] = self.configs.league_name
-        dataframe = dataframe.loc[:, ~dataframe.columns.str.startswith("unnamed")]
-        dataframe = dataframe.loc[:, ~dataframe.columns.str.startswith("Unnamed")]
-        dataframe = dataframe.replace("#", None)
+    @staticmethod
+    def get_lowercase_columns(dataframe: pd.DataFrame) -> map:
+        return map(str.lower, dataframe.columns)
 
+    def convert_div_name(self, dataframe: pd.DataFrame) -> DataFrame:
+        dataframe = dataframe.rename({"div": "division"})
+        dataframe[self.division] = self.configs.league_name
+        return dataframe
+
+    def remove_col_name_string_starts_with(self, dataframe: pd.DataFrame, col_name: str) -> DataFrame:
+        dataframe.columns = self.get_lowercase_columns(dataframe)
+        return dataframe.loc[:, ~dataframe.columns.str.startswith(col_name)]
+
+    @staticmethod
+    def replace_values_in_dataframe(dataframe: pd.DataFrame, value_to_replace: str) -> DataFrame:
+        return dataframe.replace(value_to_replace, None)
+
+    @staticmethod
+    def dataframe_datetime_polisher(dataframe: pd.DataFrame) -> DataFrame:
         """
-        Unfortunately the people who curate this data think having four different timestamps 
-        is the way to go... maybe this will go away if I decide to convert to a spark 
+        Unfortunately the people who curate this data think having four different timestamps
+        is the way to go... maybe this will go away if I decide to convert to a spark
         application but doubt it. (pain)
         """
         dataframe_us_full_year = pd.to_datetime(dataframe["date"], format="%m/%d/%Y", errors='coerce')
         dataframe_eu_full_year = pd.to_datetime(dataframe["date"], format="%d/%m/%Y", errors='coerce')
         dataframe_us_half_year = pd.to_datetime(dataframe["date"], format="%m/%d/%y", errors='coerce')
         dataframe_eu_half_year = pd.to_datetime(dataframe["date"], format="%d/%m/%y", errors='coerce')
+
         final_dataframe = dataframe.copy()
-        final_dataframe["date"] = dataframe_eu_full_year.fillna(dataframe_us_full_year).fillna(
-            dataframe_eu_half_year).fillna(
-            dataframe_us_half_year)
+        final_dataframe["date"] = dataframe_eu_full_year\
+            .fillna(dataframe_us_full_year)\
+            .fillna(dataframe_eu_half_year)\
+            .fillna(dataframe_us_half_year)
+
+        return final_dataframe
+
+    def clean_dataframe(self, dataframe: pd.DataFrame) -> DataFrame:
+        dataframe = self.convert_div_name(dataframe)
+        dataframe = self.remove_col_name_string_starts_with(dataframe, "unnamed")
+        dataframe = self.replace_values_in_dataframe(dataframe, "#")
+        final_dataframe = self.dataframe_datetime_polisher(dataframe)
 
         return self.add_high_watermark(final_dataframe)
 
