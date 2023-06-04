@@ -15,9 +15,14 @@ class SeasonDates:
     def get_this_season(self) -> str:
         return self.get_years_list()[0]
 
-    def get_seasons_list(self) -> List[str]:
+    def get_seasons_list(self, season_list: List[str] = None) -> List[str]:
+        if season_list:
+            years_list = season_list
+        else:
+            years_list = self.get_years_list()
+
         list_of_years = []
-        for year in self.get_years_list():
+        for year in years_list:
             match len(year):
                 case 4:
                     list_of_years.append(year)
@@ -33,8 +38,12 @@ class SeasonDates:
     def get_current_season_download_path(self) -> str:
         return f"{self.configs.download_link}/{self.configs.link_constant}/{self.get_this_season()}/{self.configs.excel_path}.csv"
 
-    def get_multiple_season_download_paths(self) -> List[str]:
-        seasons_list = self.get_seasons_list()
+    def get_multiple_season_download_paths(self, season_list: List[str] = None) -> List[str]:
+        if season_list:
+            seasons_list = season_list
+        else:
+            seasons_list = self.get_seasons_list()
+
         download_paths = []
 
         for amended_year in seasons_list:
