@@ -1,10 +1,10 @@
 name: Football Data pipeline
 
-on: [push]
+on:
+  push
 
 jobs:
   testing-pipeline:
-    build:
       runs-on: ubuntu-latest
       strategy:
         matrix:
@@ -29,7 +29,17 @@ jobs:
             pip install -r requirements.txt
             pip install -e .
 
-        - name: Run Tests
+        - name: Run DataframeUtils Test
           run: |
-            echo "Launching unit tests"
-            python -m unittest tests/*
+            echo "Launching DataframeUtils tests"
+            python -m unittest tests/test_dataframe_utils.py
+
+        - name: Run PostgresUtils Test
+          run: |
+             echo "Launching PostgresUtils Tests"
+             python -m unittest tests/test_postgres.py
+
+        - name: Run SeasonDates Tests
+          run: |
+             echo "Launching SeasonDates Tests"
+             python -m unittest tests/test_season_dates.py

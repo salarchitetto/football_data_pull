@@ -20,13 +20,13 @@ class TestPostgresUtils(unittest.TestCase):
         self.test_names = ["premier_leage", "serie_a", "la_liga"]
         self.test_times = ["2023-05-29", "2023-05-31", "2000-01-01"]
         self.test_dataframe = pd.DataFrame(zip(self.test_ids, self.test_names, self.test_times),
-                                           columns=["id", "div", "date"])
+                                           columns=["id", "division", "date"])
 
     def test_connection(self):
         assert(self.postgres_util.connection())
 
     def test_postgres_utils(self):
-        create_table_query = f"create table if not exists {self.test_table_name} (id int, div varchar, date varchar);"
+        create_table_query = f"create table if not exists {self.test_table_name} (id int, division varchar, date varchar);"
         check_schema_query = f"select * from {self.test_table_name};"
         self.postgres_util.execute(create_table_query)
         initial_data = self.postgres_util.grab_data(check_schema_query)
@@ -43,9 +43,9 @@ class TestPostgresUtils(unittest.TestCase):
 
         self.assertFalse(initial_data)
         self.assertIsNotNone(data)
-        self.assertEqual(schema, ["id", "div", "date"])
+        self.assertEqual(schema, ["id", "division", "date"])
         self.assertEqual(max_date, "2023-05-31")
-        self.assertEqual(existing_schema, ["id", "div", "date"])
+        self.assertEqual(existing_schema, ["id", "division", "date"])
 
     def tearDown(self) -> None:
         self.postgresql.stop()
