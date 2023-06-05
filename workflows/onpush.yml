@@ -1,6 +1,7 @@
 name: Football Data pipeline
 
-on: [push]
+on:
+  push
 
 jobs:
   testing-pipeline:
