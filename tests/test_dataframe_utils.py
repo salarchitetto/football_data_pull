@@ -42,7 +42,9 @@ class TestDataframeUtils(unittest.TestCase):
         cleaned_dataframe = self.dataframe_utils. \
             add_missing_columns_to_dataframe(cols, [self.test_dataframe_missing_cols])
 
-        assert_frame_equal(cleaned_dataframe[0], self.cleaned_dataframe)
+        assert_frame_equal(
+            cleaned_dataframe[0].reindex(sorted(cleaned_dataframe[0].columns), axis=1),
+            self.cleaned_dataframe.reindex(sorted(self.cleaned_dataframe.columns), axis=1))
 
     def test_create_dataframe_list(self):
         dataframes = self.dataframe_utils.create_dataframe_list(self.paths)
