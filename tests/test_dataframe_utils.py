@@ -18,7 +18,7 @@ class TestDataframeUtils(unittest.TestCase):
                                            columns=["id", "division", "date"])
         self.test_dataframe_missing_cols = pd.DataFrame(self.test_ids, columns=["id"])
         self.cleaned_dataframe = pd.DataFrame(zip(self.test_ids, self.test_names_none, self.test_times_none),
-                                              columns=["id", "date", "division"])
+                                              columns=["id", "division", "date"])
         self.uppercase_dataframe = pd.DataFrame(zip(self.test_ids, self.test_names_none, self.test_times_none),
                                                 columns=["id", "date", "division"])
         self.unnamed_dataframe = pd.DataFrame(zip(self.test_ids, self.test_names_none, self.test_times_none,
