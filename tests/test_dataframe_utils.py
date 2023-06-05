@@ -15,17 +15,17 @@ class TestDataframeUtils(unittest.TestCase):
         self.test_times = ["2023-05-29", "2023-05-31", "2000-01-01"]
         self.test_times_none = [None, None, None]
         self.test_dataframe = pd.DataFrame(zip(self.test_ids, self.test_names, self.test_times),
-                                           columns=["id", "div", "date"])
+                                           columns=["id", "division", "date"])
         self.test_dataframe_missing_cols = pd.DataFrame(self.test_ids, columns=["id"])
         self.cleaned_dataframe = pd.DataFrame(zip(self.test_ids, self.test_names_none, self.test_times_none),
-                                              columns=["id", "date", "div"])
+                                              columns=["id", "date", "division"])
         self.uppercase_dataframe = pd.DataFrame(zip(self.test_ids, self.test_names_none, self.test_times_none),
-                                                columns=["id", "date", "div"])
+                                                columns=["id", "date", "division"])
         self.unnamed_dataframe = pd.DataFrame(zip(self.test_ids, self.test_names_none, self.test_times_none,
                                                   self.test_times_none, self.test_times_none),
-                                              columns=["id", "date", "div", "Unnamed", "unnamed"])
+                                              columns=["id", "date", "division", "Unnamed", "unnamed"])
         self.empty_dataframe = pd.DataFrame(zip(self.test_ids, self.test_names_none, self.test_times_none),
-                                            columns=["id", "date", "div"])
+                                            columns=["id", "date", "division"])
         self.paths = ["https://www.football-data.co.uk/mmz4281/2223/E0.csv",
                       "https://www.football-data.co.uk/mmz4281/1819/E1.csv"]
 
@@ -35,7 +35,7 @@ class TestDataframeUtils(unittest.TestCase):
 
     def test_find_all_columns(self):
         cols = self.dataframe_utils.find_all_column_names([self.test_dataframe])
-        self.assertEqual(cols, {"id", "date", "div"})
+        self.assertEqual(cols, {"id", "date", "division"})
 
     def test_add_missing_columns_to_dataframe(self):
         cols = self.dataframe_utils.find_all_column_names([self.test_dataframe])
@@ -53,7 +53,7 @@ class TestDataframeUtils(unittest.TestCase):
 
     def test_get_lowercase_columns(self):
         self.uppercase_dataframe.columns = map(str.lower, self.uppercase_dataframe.columns)
-        self.assertEqual(list(self.uppercase_dataframe.columns), ["id", "date", "div"])
+        self.assertEqual(list(self.uppercase_dataframe.columns), ["id", "date", "division"])
 
     def test_remove_col_name_string_starts_with(self):
         dataframe = self.dataframe_utils.remove_col_name_string_starts_with(self.unnamed_dataframe, "unnamed")
