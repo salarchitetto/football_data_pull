@@ -1,0 +1,35 @@
+name: Football Data pipeline
+
+on: [push]
+
+jobs:
+  testing-pipeline:
+    build:
+      runs-on: ubuntu-latest
+      strategy:
+        matrix:
+          python-version: [3.11]
+      steps:
+        - uses: actions/checkout@v2
+
+        - name: Set up Python all python versions
+          uses: actions/setup-python@v2
+          with:
+            python-version: ${{ matrix.python-version }}
+            architecture: x64
+
+        - name: Install pip
+          run: | 
+             echo "Installing pip"
+             python -m pip install --upgrade pip
+
+        - name: Install dependencies
+          run: |
+            echo "Installing Dependencies"
+            pip install -r requirements.txt
+            pip install -e .
+
+        - name: Run Tests
+          run: |
+            echo "Launching unit tests"
+            python -m unittest tests/*
