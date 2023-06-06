@@ -4,3 +4,31 @@ on:
   push:
     tags:
       - "v*" # Pushing stuff should be like v1.0, v0.0.1, v2000.1.1 (not really)
+
+jobs:
+  release-pipeline:
+      runs-on: ubuntu-latest
+      strategy:
+        matrix:
+          python-version: [3.11]
+      steps:
+        - uses: actions/checkout@v2
+
+        - name: Set up Python all python versions
+          uses: actions/setup-python@v2
+          with:
+            python-version: ${{ matrix.python-version }}
+            architecture: x64
+
+        - name: Create Release
+          id: create_release
+          uses: actions/checkout@v2
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions
+          with:
+            tag_name: ${{ github.ref }}
+            release_name: Release ${{github.ref}}
+            body: |
+              Release for Version ${{ github.ref }}.
+            draft: false
+            prerelease: false
