@@ -32,33 +32,3 @@ jobs:
               Release for Version ${{ github.ref }}.
             draft: false
             prerelease: false
-
-        - name: build artifacts
-          run: make build-linux && make build-windows && make build-darwin
-        - name: upload linux artifact
-          uses: actions/upload-release-asset@v1
-          env:
-            GITHUB_TOKEN: ${{ github.token }}
-          with:
-            upload_url: ${{ steps.create_release.outputs.upload_url }}
-            asset_path: ./football_data_pull.linux-amd64.tar.gz
-            asset_name: football_data_pull.linux-amd64.tar.gz
-            asset_content_type: application/gzip
-        - name: upload darwin artifact
-          uses: actions/upload-release-asset@v1
-          env:
-            GITHUB_TOKEN: ${{ github.token }}
-          with:
-            upload_url: ${{ steps.create_release.outputs.upload_url }}
-            asset_path: ./football_data_pull.darwin-amd64.tar.gz
-            asset_name: football_data_pull.darwin-amd64.tar.gz
-            asset_content_type: application/gzip
-        - name: upload windows artifact
-          uses: actions/upload-release-asset@v1
-          env:
-            GITHUB_TOKEN: ${{ github.token }}
-          with:
-            upload_url: ${{ steps.create_release.outputs.upload_url }}
-            asset_path: ./football_data_pull.windows-amd64.zip
-            asset_name: football_data_pull.windows-amd64.zip
-            asset_content_type: application/zip
