@@ -23,6 +23,16 @@ jobs:
              echo "Installing pip"
              python -m pip install --upgrade pip
 
+        - name: Install PyLint
+          run: |
+             echo "Installing pylint"
+             pip install pylint
+        
+        - name: Analysing the code with pylint
+          run: |
+            "echo" Checking For Code Funk
+            find . -name '*.py' -exec pylint {} \;
+
         - name: Install dependencies
           run: |
             echo "Installing Dependencies"
