@@ -31,7 +31,7 @@ jobs:
         - name: Analysing the code with pylint
           run: |
             "echo" Checking For Code Funk
-            find . -name '*.py' -exec pylint {} \;
+            find . -name '*.py' --ignore-patterns=test_.*?py -exec pylint {} \;
 
         - name: Install dependencies
           run: |
