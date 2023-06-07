@@ -9,7 +9,7 @@ from utilities.logger import Logger
 
 class PostgresUtils:
 
-    def __init__(self):
+    def __init__(self, table_name: str = None):
         self.dotEnv = load_dotenv()
         self.db_name = os.getenv("POSTGRES_DB")
         self.host = os.getenv("POSTGRES_HOST")
@@ -17,8 +17,11 @@ class PostgresUtils:
         self.password = os.getenv("POSTGRES_PASSWORD")
         self.port = os.getenv("POSTGRES_PORT")
         self.logger = Logger(logger_name="PostgresUtils")
-        self.table_name = os.getenv("TABLE_NAME")
         self.column_util = ColumnUtils()
+        if table_name:
+            self.table_name = table_name
+        else:
+            self.table_name = os.getenv("TABLE_NAME")
 
     def connection(self):
         try:

@@ -9,6 +9,7 @@ class TestPostgresUtils(unittest.TestCase):
     def setUp(self) -> None:
         self.postgresql = testing.postgresql.Postgresql(port=7654)
         self.postgres_util = PostgresUtils()
+        self.postgres_util.table_name = "testing_table"
         self.postgres_util.host = "127.0.0.1"
         self.postgres_util.db_name = "test"
         self.postgres_util.user = "postgres"
@@ -31,15 +32,15 @@ class TestPostgresUtils(unittest.TestCase):
         self.postgres_util.execute(create_table_query)
         initial_data = self.postgres_util.grab_data(check_schema_query)
 
-        self.postgres_util.upload_dataframe(self.test_dataframe, self.test_table_name)
+        self.postgres_util.upload_dataframe(self.test_dataframe)
         data = self.postgres_util.grab_data(f"select * from {self.test_table_name}")
 
-        schema = self.postgres_util.grab_table_schema(self.test_table_name)
+        schema = self.postgres_util.grab_table_schema()
 
-        max_date = self.postgres_util.get_high_water_mark_time("serie_a", self.test_table_name)
+        max_date = self.postgres_util.get_high_water_mark_time("serie_a")
 
-        self.postgres_util.create_table_from_existing_dataframe(self.test_dataframe, self.test_existing_table_name)
-        existing_schema = self.postgres_util.grab_table_schema(self.test_existing_table_name)
+        self.postgres_util.create_table_from_existing_dataframe(self.test_dataframe)
+        existing_schema = self.postgres_util.grab_table_schema()
 
         self.assertFalse(initial_data)
         self.assertIsNotNone(data)

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Final
 from utilities.logger import Logger
 
 
@@ -8,8 +8,8 @@ class Configurator:
         self.league_name = None
         self.excel_path = None
         self.file_name = None
-        self.download_link = "https://www.football-data.co.uk"
-        self.link_constant = "mmz4281"
+        self.download_link: Final = "https://www.football-data.co.uk"
+        self.link_constant: Final = "mmz4281"
         self.logger = Logger(logger_name="Configurator")
 
     @property
