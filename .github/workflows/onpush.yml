@@ -44,6 +44,11 @@ jobs:
             echo "Launching DataframeUtils tests"
             python -m unittest tests/test_dataframe_utils.py
 
+        - name: Run ColumnUtils Test
+          run: |
+            echo "launching ColumnUtils Tests"
+            python -m unittest tests/test_column_utils.py
+
         - name: Run PostgresUtils Test
           run: |
              echo "Launching PostgresUtils Tests"
