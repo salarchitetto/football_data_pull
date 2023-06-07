@@ -12,17 +12,17 @@ class Processor:
         self.logger = Logger(logger_name="Processor")
 
     def process(self):
-        dataframe_util = DataframeUtil(self.configs)
+        dataframe_util = DataframeUtil()
         postgres = PostgresUtils()
         path_to_csv_link = SeasonDates(self.configs).get_current_season_download_path()
 
-        dataframe = dataframe_util.clean_dataframe(dataframe_util.get_dataframe(path_to_csv_link))
+        dataframe = dataframe_util.clean_dataframe(dataframe_util.get_dataframe(path_to_csv_link),
+                                                   self.configs.league_name)
 
-        previous_run_time = postgres.get_high_water_mark_time(league_name=self.configs.league_name,
-                                                              table_name="results")
+        previous_run_time = postgres.get_high_water_mark_time(league_name=self.configs.league_name)
         filtered_dataframe = dataframe_util.high_water_mark_filter(dataframe, previous_run_time)
 
         if filtered_dataframe.empty:
             self.logger.info("Dataframe is empty, will not attempt to write")
         else:
-            postgres.upload_dataframe(filtered_dataframe, "results")
+            postgres.upload_dataframe(filtered_dataframe)

@@ -6,11 +6,12 @@ from utilities.configurator import Configurator
 import time
 
 if __name__ == "__main__":
-    PostgresUtils().execute("DROP TABLE IF EXISTS results")
-    configs = Configurator()
-
     logger = Logger(logger_name="Back Fill Data Processor")
     logger.info(f"{TerminalColors.OKCYAN}{ascii_intro_footy}{TerminalColors.ENDC}{ascii_intro_dash}")
+
+    logger.info("Dropping table if exists results")
+    PostgresUtils().execute("DROP TABLE IF EXISTS results")
+    configs = Configurator()
 
     for league in LeagueDictionary:
         start_time = time.time()
@@ -22,7 +23,7 @@ if __name__ == "__main__":
         configs.file_name = league.name.lower()
         configs.league_name = league['file_name']
         configs.excel_path = league['excel_path']
-        ProcessorBackFill(configs, "results").process_back_fill()
+        ProcessorBackFill(configs).process_back_fill()
 
         logger.info(f"--- {(time.time() - start_time)} seconds ---")
         logger.info(f"{'*' * 75}")

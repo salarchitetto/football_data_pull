@@ -3,15 +3,13 @@ from sqlalchemy import create_engine
 from dotenv import load_dotenv
 import psycopg2
 import os
-from utilities.dataframe_util import DataframeUtil
+from utilities.dataframe_util import DataframeUtil, ColumnUtils
 from utilities.logger import Logger
 
 
 class PostgresUtils:
 
-    def __init__(self, _all: bool = True, league: str = None):
-        self._all = all
-        self.league = league
+    def __init__(self):
         self.dotEnv = load_dotenv()
         self.db_name = os.getenv("POSTGRES_DB")
         self.host = os.getenv("POSTGRES_HOST")
@@ -19,6 +17,8 @@ class PostgresUtils:
         self.password = os.getenv("POSTGRES_PASSWORD")
         self.port = os.getenv("POSTGRES_PORT")
         self.logger = Logger(logger_name="PostgresUtils")
+        self.table_name = os.getenv("TABLE_NAME")
+        self.column_util = ColumnUtils()
 
     def connection(self):
         try:
@@ -58,39 +58,39 @@ class PostgresUtils:
             self.logger.error(f"An error has occurred: {e}")
 
     # TODO: Move this to other Class, this should just be a create table method or something
-    def create_table_from_existing_dataframe(self, dataframe, table_name: str) -> None:
-        df = DataframeUtil().remove_unnamed_from_column_name(dataframe)
+    def create_table_from_existing_dataframe(self, dataframe) -> None:
+        df = self.column_util.remove_col_name_string_starts_with(dataframe, "unnamed")
         columns = self.add_quotes(df.columns)
         data_types = DataframeUtil().grab_dtypes(df)
 
         query = f"""
-            CREATE TABLE IF NOT EXISTS {table_name} (
+            CREATE TABLE IF NOT EXISTS {self.table_name} (
                 {' ,'.join(' '.join(x) for x in zip(columns, data_types))}
             )
         """
         self.execute(query)
 
-    def upload_dataframe(self, dataframe, table_name: str) -> None:
+    def upload_dataframe(self, dataframe) -> None:
         try:
-            self.logger.info(f"Writing Dataframe to postgres table {self.db_name}.{table_name}")
-            dataframe.to_sql(name=table_name, con=self.create_engine(), if_exists="append", index=False)
+            self.logger.info(f"Writing Dataframe to postgres table {self.db_name}.{self.table_name}")
+            dataframe.to_sql(name=self.table_name, con=self.create_engine(), if_exists="append", index=False)
             self.connection().commit()
             self.connection().close()
         except Exception as e:
             self.logger.error(f"An error has occurred: {e}")
 
-    def grab_table_schema(self, table_name: str) -> List[str]:
+    def grab_table_schema(self) -> List[str]:
         query = f"""
             select column_name from information_schema.columns 
-            where table_name='{table_name}';
+            where table_name='{self.table_name}';
         """
 
         return [row[0] for row in self.grab_data(query)]
 
-    def get_high_water_mark_time(self, league_name: str, table_name: str) -> str:
+    def get_high_water_mark_time(self, league_name: str) -> str:
         # Use this to get the high water-mark column for a given league
         query = f"""
-            select max(date) from {table_name} where division = '{league_name}'
+            select max(date) from {self.table_name} where division = '{league_name}'
         """
 
         return str(self.grab_data(query)[0][0])
