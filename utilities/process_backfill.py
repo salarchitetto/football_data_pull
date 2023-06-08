@@ -30,15 +30,12 @@ class ProcessorBackFill:
         elif self.configs.file_name in self.checks:
             for dataframe in cleaned_dataframes:
                 dataframe = dataframe_util.clean_dataframe(dataframe, self.configs.league_name)
-                cols_to_add = self.configs.find_diff_between_lists(PostgresUtils()
-                                                                   .grab_table_schema(),
-                                                                   dataframe.columns)
+                cols_to_add = self.configs.find_diff_between_lists(PostgresUtils().grab_table_schema(), dataframe.columns)
                 dataframe = column_util.add_columns(dataframe, cols_to_add)
                 PostgresUtils().upload_dataframe(dataframe[PostgresUtils().grab_table_schema()])
 
         else:
             dataframe = dataframe_util.union_dataframes(dataframes, self.configs.league_name)
-            cols_to_add = self.configs.find_diff_between_lists\
-                (PostgresUtils().grab_table_schema(), dataframe.columns)
+            cols_to_add = self.configs.find_diff_between_lists(PostgresUtils().grab_table_schema(), dataframe.columns)
             dataframe = column_util.add_columns(dataframe, cols_to_add)
             PostgresUtils().upload_dataframe(dataframe[PostgresUtils().grab_table_schema()])

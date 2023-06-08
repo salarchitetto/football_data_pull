@@ -104,6 +104,12 @@ class DataframeUtil:
 
         return self.add_high_watermark(final_dataframe)
 
+    # def add_ids(self, dataframe: pd.DataFrame) -> DataFrame:
+    #     dataframe["team_id"] = dataframe["hometeam"].apply(generate_id)
+    #     dataframe["away_id"] = dataframe["awayteam"].apply(generate_id)
+    #     dataframe["match_id"] = (dataframe["hometeam"] + dataframe["awayteam"] + dataframe["date"]).apply(generate_id)
+    #     return dataframe
+
     def add_high_watermark(self, dataframe: pd.DataFrame) -> DataFrame:
         dataframe["high_water_mark"] = self.now
         return dataframe
