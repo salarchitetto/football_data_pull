@@ -3,11 +3,7 @@
 Pretty much what the title says! The initial start of grabbing some data to perform some kind of analytics on it 
 (version 0.01 so yea not much too it yet). There isn't any testing yet but don't fret it'll come. 
 This is more of the data engineering portion of the project, grab some data, 
-mold it into something nice, create API to query from it. 
-# Notes: 
-one repository of what will be many. This is data aggregation, 
-to display it in a way that people understand it with the goal to provide this information for everyone. 
-I want to make soccer more inviting to the general population. 
+mold it into something nice, create API to query from it.
 
 ## Data Collection and where its coming from
 In its current state this is strictly just a `python3` application. It primarly uses `Pandas` to collect 
