@@ -98,6 +98,13 @@ class PostgresUtils:
 
         return str(self.grab_data(query)[0][0])
 
+    def create_distinct_teams_table(self) -> None:
+        query: str = f"""
+            CREATE TABLE teams AS SELECT DISTINCT(hometeam) as team_name, home_id as team_id from {self.table_name}
+        """
+
+        self.execute(query)
+
     @staticmethod
     def add_quotes(lst: List[str]) -> List[str]:
         return [f'"{item}"' for item in lst]

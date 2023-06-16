@@ -3,6 +3,8 @@ from datetime import datetime
 import pandas as pd
 from pandas import DataFrame
 from warnings import simplefilter
+
+from utilities.id_generator import TeamIDGenerator
 from utilities.logger import Logger
 
 simplefilter(action="ignore", category=pd.errors.PerformanceWarning)
@@ -43,12 +45,13 @@ class ColumnUtils:
 
 
 class DataframeUtil:
-    def __init__(self):
+    def __init__(self, id_generator: TeamIDGenerator = None):
         self.division = "division"
         self.string_columns = ["Div", "Date", "Time", "HomeTeam", "AwayTeam", "FTR", "HTR"]
         self.now = datetime.now().strftime("%Y/%m/%d %H:%M:%S")
         self.logger = Logger(logger_name="DataframeUtil")
         self.column_util = ColumnUtils()
+        self.id_generator = id_generator
 
     @staticmethod
     def get_dataframe(path) -> pd.DataFrame:
@@ -100,15 +103,16 @@ class DataframeUtil:
         dataframe = self.column_util.remove_col_name_string_starts_with(dataframe, "unnamed")
         dataframe = self.replace_values_in_dataframe(dataframe, "#")
         dataframe = self.remove_null_team_rows(dataframe)
+        dataframe = self.add_ids(dataframe)
         final_dataframe = self.dataframe_datetime_polisher(dataframe)
 
         return self.add_high_watermark(final_dataframe)
 
-    # def add_ids(self, dataframe: pd.DataFrame) -> DataFrame:
-    #     dataframe["team_id"] = dataframe["hometeam"].apply(generate_id)
-    #     dataframe["away_id"] = dataframe["awayteam"].apply(generate_id)
-    #     dataframe["match_id"] = (dataframe["hometeam"] + dataframe["awayteam"] + dataframe["date"]).apply(generate_id)
-    #     return dataframe
+    def add_ids(self, dataframe: pd.DataFrame) -> DataFrame:
+        dataframe["home_id"] = dataframe["hometeam"].apply(self.id_generator.generate_team_id)
+        dataframe["away_id"] = dataframe["awayteam"].apply(self.id_generator.generate_team_id)
+        dataframe["match_id"] = [self.id_generator.generate_uuid() for _ in range(len(dataframe.index))]
+        return dataframe
 
     def add_high_watermark(self, dataframe: pd.DataFrame) -> DataFrame:
         dataframe["high_water_mark"] = self.now

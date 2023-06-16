@@ -14,7 +14,7 @@ class TeamIDGenerator:
             return self.generated_ids[team_name]
 
         # Generate new team ID
-        _id = str(uuid.uuid4())
+        _id = self.generate_uuid()
 
         while _id in self.generated_ids.values():
             _id = str(uuid.uuid4())
@@ -23,3 +23,7 @@ class TeamIDGenerator:
         self.generated_names.add(team_name)
 
         return _id
+
+    @staticmethod
+    def generate_uuid():
+        return str(uuid.uuid4())

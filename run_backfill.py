@@ -1,5 +1,6 @@
 from configs import LeagueDictionary, TerminalColors, ascii_intro_footy, ascii_intro_dash
 from postgres.postgres_utils import PostgresUtils
+from utilities.id_generator import TeamIDGenerator
 from utilities.logger import Logger
 from utilities.process_backfill import ProcessorBackFill
 from utilities.configurator import Configurator
@@ -12,6 +13,7 @@ if __name__ == "__main__":
     logger.info("Dropping table if exists results")
     PostgresUtils().execute("DROP TABLE IF EXISTS results")
     configs = Configurator()
+    id_generator = TeamIDGenerator()
 
     for league in LeagueDictionary:
         start_time = time.time()
@@ -23,7 +25,10 @@ if __name__ == "__main__":
         configs.file_name = league.name.lower()
         configs.league_name = league['file_name']
         configs.excel_path = league['excel_path']
-        ProcessorBackFill(configs).process_back_fill()
+        ProcessorBackFill(configs).process_back_fill(id_generator)
 
         logger.info(f"--- {(time.time() - start_time)} seconds ---")
         logger.info(f"{'*' * 75}")
+
+    logger.info("Creating distinct teams table")
+    PostgresUtils().create_distinct_teams_table()

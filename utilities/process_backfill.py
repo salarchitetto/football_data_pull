@@ -2,6 +2,7 @@ from configs import LeagueDictionary
 from postgres.postgres_utils import PostgresUtils
 from utilities.configurator import Configurator
 from utilities.dataframe_util import DataframeUtil, ColumnUtils
+from utilities.id_generator import TeamIDGenerator
 from utilities.season_dates import SeasonDates
 
 
@@ -13,8 +14,8 @@ class ProcessorBackFill:
                        LeagueDictionary.LALIGA2.name.lower(),
                        LeagueDictionary.SCOT_PREM.name.lower()]
 
-    def process_back_fill(self) -> None:
-        dataframe_util = DataframeUtil()
+    def process_back_fill(self, id_generator: TeamIDGenerator) -> None:
+        dataframe_util = DataframeUtil(id_generator)
         column_util = ColumnUtils()
         download_paths = SeasonDates(self.configs).get_multiple_season_download_paths()
 
@@ -22,6 +23,7 @@ class ProcessorBackFill:
         columns = column_util.find_all_column_names(dataframes)
         cleaned_dataframes = column_util.add_missing_columns_to_dataframe(columns, dataframes)
 
+        # TODO: refactor this
         if self.configs.file_name == LeagueDictionary.PREMIER_LEAGUE.name.lower():
             dataframe = dataframe_util.union_dataframes(cleaned_dataframes, self.configs.league_name)
             PostgresUtils().create_table_from_existing_dataframe(dataframe)
