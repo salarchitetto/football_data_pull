@@ -57,8 +57,8 @@ class DataframeUtil:
     def get_dataframe(path) -> pd.DataFrame:
         return pd.read_csv(path, encoding='windows-1252', on_bad_lines='skip')
 
-    def create_dataframe_list(self, zipped_data: zip) -> List[DataFrame]:
-        return [self.add_season_to_dataframe(date, self.get_dataframe(path)) for path, date in zipped_data]
+    def create_dataframe_list(self, paths: List[str]) -> List[DataFrame]:
+        return [self.get_dataframe(path) for path in paths]
 
     @staticmethod
     def add_season_to_dataframe(season: str, dataframe: pd.DataFrame) -> DataFrame:
@@ -66,10 +66,11 @@ class DataframeUtil:
         return dataframe
 
     def union_dataframes(self, dataframes: List[DataFrame]) -> DataFrame:
+        """
+        Deprecated probably, keep it here if needed in the future
+        """
         self.logger.info("Concatenating Dataframes")
-        # dataframe = pd.concat(dataframes)
         return pd.concat(dataframes)
-            # self.clean_dataframe(dataframe, league_name, season)
 
     def convert_div_name(self, dataframe: pd.DataFrame, league_name: str) -> DataFrame:
         dataframe = dataframe.rename({"div": "division"})

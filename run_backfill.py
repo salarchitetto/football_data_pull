@@ -1,5 +1,5 @@
 from configs import LeagueDictionary, TerminalColors, ascii_intro_footy, ascii_intro_dash
-from postgres.postgres_utils import PostgresUtils
+from utilities.postgres.postgres_utils import PostgresUtils
 from utilities.id_generator import TeamIDGenerator
 from utilities.logger import Logger
 from utilities.process_backfill import ProcessorBackFill
