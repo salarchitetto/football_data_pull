@@ -1,4 +1,6 @@
 from typing import List
+
+import pandas as pd
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 import psycopg2
@@ -73,9 +75,9 @@ class PostgresUtils:
         """
         self.execute(query)
 
-    def upload_dataframe(self, dataframe) -> None:
+    def upload_dataframe(self, dataframe: pd.DataFrame, msg: str = None) -> None:
         try:
-            self.logger.info(f"Writing Dataframe to postgres table {self.db_name}.{self.table_name}")
+            self.logger.info(f"Writing Dataframe to postgres table {self.db_name}.{self.table_name}: {msg}")
             dataframe.to_sql(name=self.table_name, con=self.create_engine(), if_exists="append", index=False)
             self.connection().commit()
             self.connection().close()
@@ -100,12 +102,25 @@ class PostgresUtils:
 
     def create_distinct_teams_table(self) -> None:
         query: str = f"""
-            CREATE TABLE IF NOT EXISTS teams AS SELECT DISTINCT(hometeam) as team_name, home_id as team_id 
+            CREATE TABLE IF NOT EXISTS teams AS SELECT DISTINCT(home_team) as team_name, home_id as team_id 
             from {self.table_name}
         """
 
         self.execute(query)
 
+    def get_existing_team_ids(self, list_of_teams: List[str]) -> List[str]:
+        query = f"""
+            SELECT team_name, team_id FROM teams 
+            WHERE team_name IN ({','.join(self.add_quotes(list_of_teams, True))})
+        """
+
+        _ids = self.grab_data(query)
+
+        return _ids
+
     @staticmethod
-    def add_quotes(lst: List[str]) -> List[str]:
-        return [f'"{item}"' for item in lst]
+    def add_quotes(lst: List[str], single_quote: bool = None) -> List[str]:
+        if single_quote:
+            return [f"'{item}'" for item in lst]
+        else:
+            return [f'"{item}"' for item in lst]

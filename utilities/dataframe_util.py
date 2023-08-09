@@ -4,6 +4,7 @@ import pandas as pd
 from pandas import DataFrame
 from warnings import simplefilter
 
+from configs import results_column_mapping
 from utilities.id_generator import TeamIDGenerator
 from utilities.logger import Logger
 
@@ -55,7 +56,7 @@ class DataframeUtil:
 
     @staticmethod
     def get_dataframe(path) -> pd.DataFrame:
-        return pd.read_csv(path, encoding='windows-1252', on_bad_lines='skip')
+        return pd.read_csv(path, encoding='windows-1252', on_bad_lines='skip', storage_options={'verify': False})
 
     def create_dataframe_list(self, paths: List[str]) -> List[DataFrame]:
         return [self.get_dataframe(path) for path in paths]
@@ -111,9 +112,11 @@ class DataframeUtil:
         dataframe = self.replace_values_in_dataframe(dataframe, "#")
         dataframe = self.remove_null_team_rows(dataframe)
         dataframe = self.add_ids(dataframe)
-        final_dataframe = self.dataframe_datetime_polisher(dataframe)
+        dataframe = self.dataframe_datetime_polisher(dataframe)
+        dataframe = self.add_high_watermark(dataframe)
+        final_dataframe = dataframe.rename(columns=results_column_mapping)
 
-        return self.add_high_watermark(final_dataframe)
+        return final_dataframe
 
     def add_ids(self, dataframe: pd.DataFrame) -> DataFrame:
         dataframe["home_id"] = dataframe["hometeam"].apply(self.id_generator.generate_team_id)

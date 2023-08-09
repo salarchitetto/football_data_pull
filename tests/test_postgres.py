@@ -32,7 +32,7 @@ class TestPostgresUtils(unittest.TestCase):
         self.postgres_util.execute(create_table_query)
         initial_data = self.postgres_util.grab_data(check_schema_query)
 
-        self.postgres_util.upload_dataframe(self.test_dataframe)
+        self.postgres_util.upload_dataframe(self.test_dataframe, "test_framework")
         data = self.postgres_util.grab_data(f"select * from {self.test_table_name}")
 
         schema = self.postgres_util.grab_table_schema()
