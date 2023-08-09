@@ -28,4 +28,6 @@ class Processor:
         if filtered_dataframe.empty:
             self.logger.info("Dataframe is empty, will not attempt to write")
         else:
-            self.postgres_util.upload_dataframe(filtered_dataframe)
+            self.postgres_util.upload_dataframe(dataframe=filtered_dataframe,
+                                                msg=f"{self.configs.league_name} : {season_formatted}"
+                                                )
