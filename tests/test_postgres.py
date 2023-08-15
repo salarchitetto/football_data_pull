@@ -42,7 +42,7 @@ class TestPostgresUtils(unittest.TestCase):
         self.postgres_util.create_table_from_existing_dataframe(self.test_dataframe)
         existing_schema = self.postgres_util.grab_table_schema()
 
-        self.assertFalse(initial_data)
+        assert initial_data.empty
         self.assertIsNotNone(data)
         self.assertEqual(schema, ["id", "division", "date"])
         self.assertEqual(max_date, "2023-05-31")

@@ -1,6 +1,7 @@
 from typing import List
 
 import pandas as pd
+from pandas import DataFrame
 from sqlalchemy import create_engine
 from dotenv import load_dotenv
 import psycopg2
@@ -51,14 +52,16 @@ class PostgresUtils:
         except Exception as e:
             self.logger.error(f"An error has occurred executing the query provided: {e}")
 
-    def grab_data(self, query: str):
+    def grab_data(self, query: str) -> pd.DataFrame:
         connection = self.connection()
         cursor = connection.cursor()
 
         try:
             cursor.execute(query)
-
-            return cursor.fetchall()
+            results = cursor.fetchall()
+            results_columns = [col[0] for col in cursor.description]
+            dataframe = pd.DataFrame(results, columns=results_columns)
+            return dataframe
         except Exception as e:
             self.logger.error(f"An error has occurred: {e}")
 
@@ -90,15 +93,15 @@ class PostgresUtils:
             where table_name='{self.table_name}';
         """
 
-        return [row[0] for row in self.grab_data(query)]
+        return self.grab_data(query)['column_name'].tolist()
 
     def get_high_water_mark_time(self, league_name: str) -> str:
         # Use this to get the high water-mark column for a given league
         query = f"""
-            select max(date) from {self.table_name} where division = '{league_name}'
+            select max(date) as max_date from {self.table_name} where division = '{league_name}'
         """
-
-        return str(self.grab_data(query)[0][0])
+        dataframe = self.grab_data(query)
+        return dataframe['max_date'].iloc[0]
 
     def create_distinct_teams_table(self) -> None:
         query: str = f"""
@@ -108,7 +111,7 @@ class PostgresUtils:
 
         self.execute(query)
 
-    def get_existing_team_ids(self, list_of_teams: List[str]) -> List[str]:
+    def get_existing_team_ids(self, list_of_teams: List[str]) -> pd.DataFrame:
         query = f"""
             SELECT team_name, team_id FROM teams 
             WHERE team_name IN ({','.join(self.add_quotes(list_of_teams, True))})

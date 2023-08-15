@@ -12,6 +12,8 @@ if __name__ == "__main__":
 
     logger.info("Dropping table if exists results")
     PostgresUtils().execute("DROP TABLE IF EXISTS results")
+    logger.info("Dropping table if exists teams")
+    PostgresUtils().execute("DROP TABLE IF EXISTS teams")
     configs = Configurator()
     id_generator = TeamIDGenerator()
 
@@ -25,6 +27,7 @@ if __name__ == "__main__":
         configs.file_name = league.name.lower()
         configs.league_name = league['file_name']
         configs.excel_path = league['excel_path']
+
         ProcessorBackFill(configs).process_back_fill(id_generator)
 
         logger.info(f"--- {(time.time() - start_time)} seconds ---")

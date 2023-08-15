@@ -29,13 +29,15 @@ class ProcessorBackFill:
         for index, (dataframe, season) in enumerate(zip(final_dataframes, formatted_season_list)):
             cleaned_dataframe = dataframe_util.clean_dataframe(dataframe, self.configs.league_name)
             dataframe_with_season = dataframe_util.add_season_to_dataframe(season, cleaned_dataframe)
+            dataframe_with_ids = dataframe_util.add_ids(dataframe_with_season)
 
             if self.configs.league_name == "premier_league" and index == 0:
-                PostgresUtils().create_table_from_existing_dataframe(dataframe_with_season)
+                PostgresUtils().create_table_from_existing_dataframe(dataframe_with_ids)
 
             cols_to_add = self.configs.find_diff_between_lists(PostgresUtils().grab_table_schema(),
-                                                               cleaned_dataframe.columns)
-            dataframe_with_missing_columns = column_util.add_columns(cleaned_dataframe, cols_to_add)
+                                                               dataframe_with_ids.columns)
+
+            dataframe_with_missing_columns = column_util.add_columns(dataframe_with_ids, cols_to_add)
             self.postgres_utils.upload_dataframe(
                 dataframe=dataframe_with_missing_columns[PostgresUtils().grab_table_schema()],
                 msg=f"{self.configs.league_name} : {season}"

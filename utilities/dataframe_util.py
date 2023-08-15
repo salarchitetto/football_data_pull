@@ -79,8 +79,14 @@ class DataframeUtil:
         return dataframe
 
     @staticmethod
-    def replace_values_in_dataframe(dataframe: pd.DataFrame, value_to_replace: str) -> DataFrame:
+    def replace_values_in_dataframe_with_none(dataframe: pd.DataFrame, value_to_replace: str) -> DataFrame:
         return dataframe.replace(value_to_replace, None)
+
+    @staticmethod
+    def replace_values_team_rows(dataframe: pd.DataFrame, value_to_replace: str) -> DataFrame:
+        dataframe["hometeam"] = dataframe["hometeam"].str.replace(value_to_replace, "")
+        dataframe["awayteam"] = dataframe["awayteam"].str.replace(value_to_replace, "")
+        return dataframe
 
     @staticmethod
     def dataframe_datetime_polisher(dataframe: pd.DataFrame) -> DataFrame:
@@ -109,9 +115,9 @@ class DataframeUtil:
     def clean_dataframe(self, dataframe: pd.DataFrame, league_name: str) -> DataFrame:
         dataframe = self.convert_div_name(dataframe, league_name)
         dataframe = self.column_util.remove_col_name_string_starts_with(dataframe, "unnamed")
-        dataframe = self.replace_values_in_dataframe(dataframe, "#")
+        dataframe = self.replace_values_in_dataframe_with_none(dataframe, "#")
+        dataframe = self.replace_values_team_rows(dataframe, "'")
         dataframe = self.remove_null_team_rows(dataframe)
-        dataframe = self.add_ids(dataframe)
         dataframe = self.dataframe_datetime_polisher(dataframe)
         dataframe = self.add_high_watermark(dataframe)
         final_dataframe = dataframe.rename(columns=results_column_mapping)
@@ -119,8 +125,8 @@ class DataframeUtil:
         return final_dataframe
 
     def add_ids(self, dataframe: pd.DataFrame) -> DataFrame:
-        dataframe["home_id"] = dataframe["hometeam"].apply(self.id_generator.generate_team_id)
-        dataframe["away_id"] = dataframe["awayteam"].apply(self.id_generator.generate_team_id)
+        dataframe["home_id"] = dataframe["home_team"].apply(self.id_generator.generate_team_id)
+        dataframe["away_id"] = dataframe["away_team"].apply(self.id_generator.generate_team_id)
         dataframe["match_id"] = [self.id_generator.generate_uuid() for _ in range(len(dataframe.index))]
         return dataframe
 
@@ -140,6 +146,23 @@ class DataframeUtil:
         dataframe = dataframe[dataframe["date"] > previous_time_stamp]
         return dataframe
 
+    def join_incoming_ids(self,
+                          incoming_dataframe: pd.DataFrame,
+                          existing_ids: pd.DataFrame,
+                          missing_ids: pd.DataFrame = None) -> DataFrame:
+
+        if missing_ids is not None and len(missing_ids) > 0:
+            self.logger.info("Concatenating missing ID's to existing ID's")
+            existing_ids = pd.concat([existing_ids, missing_ids])
+
+        processed_data = pd.merge(incoming_dataframe, existing_ids, left_on='home_team', right_on='team_name',
+                                  how='left')
+        processed_data = pd.merge(processed_data, existing_ids, left_on='away_team', right_on='team_name',
+                                  how='left')
+
+        return (processed_data.drop(["team_name_x", "team_name_y"], axis=True)
+                .rename(columns={"team_id_x": "home_id", "team_id_y": "away_id"}))
+
     @staticmethod
     def type_checker(dtype_list: List[str]) -> List[str]:
         return list(map(lambda x: x.
@@ -148,3 +171,7 @@ class DataframeUtil:
                         .replace("int64", "integer")
                         .replace("datetime64[ns]", "timestamp"),
                         dtype_list))
+
+    @staticmethod
+    def get_unique_teams(dataframe: pd.DataFrame) -> List[str]:
+        return list(pd.unique(dataframe[["home_team", "away_team"]].values.ravel("K")))

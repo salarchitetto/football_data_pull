@@ -28,12 +28,16 @@ class TestDataframeUtils(unittest.TestCase):
     def test_replace_values_in_dataframe(self):
         bad_vals = ["#", "#", "@"]
         dataframe = pd.DataFrame(zip(self.testing_dataframes.test_ids, bad_vals), columns=["id", "bad_vals"])
-        cleaned_dataframe = self.dataframe_utils.replace_values_in_dataframe(dataframe, "#")
-        cleaned_dataframe = self.dataframe_utils.replace_values_in_dataframe(cleaned_dataframe, "@")
+        cleaned_dataframe = self.dataframe_utils.replace_values_in_dataframe_with_none(dataframe, "#")
+        cleaned_dataframe = self.dataframe_utils.replace_values_in_dataframe_with_none(cleaned_dataframe, "@")
 
         assert_frame_equal(cleaned_dataframe, pd.DataFrame(zip(self.testing_dataframes.test_ids,
                                                                self.testing_dataframes.test_names_none),
                                                            columns=["id", "bad_vals"]))
+
+    def test_get_unique_teams(self):
+        results = self.dataframe_utils.get_unique_teams(self.testing_dataframes.teams_dataframe)
+        self.assertEquals(results, ["Juventus", "Arsenal"])
 
     def tearDown(self) -> None:
         pass
