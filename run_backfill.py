@@ -34,4 +34,6 @@ if __name__ == "__main__":
         logger.info(f"{'*' * 75}")
 
     logger.info("Creating distinct teams table")
+    PostgresUtils().execute("ALTER TABLE results ADD PRIMARY KEY (match_id);")
     PostgresUtils().create_distinct_teams_table()
+    PostgresUtils().execute("ALTER TABLE teams ADD PRIMARY KEY (team_id);")

@@ -5,8 +5,8 @@ from utilities.configurator import Configurator
 class SeasonDates:
     def __init__(self, configs: Configurator):
         self.configs = configs
-        self.year_end = range(23, -1, -1)
-        self.year_start = range(22, -1, -1)
+        self.year_end = range(24, -1, -1)
+        self.year_start = range(23, -1, -1)
 
     def get_years_list(self) -> List[str]:
         return [str(x) + str(y) for x, y in zip(self.year_start, self.year_end)]

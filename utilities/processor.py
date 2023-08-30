@@ -44,9 +44,11 @@ class Processor:
         else:
             merged_data = self.dataframe_util.join_incoming_ids(incoming_dataframe=cleaned_dataframe,
                                                                 existing_ids=existing_ids)
-
         previous_run_time = self.postgres_util.get_high_water_mark_time(league_name=self.configs.league_name)
         filtered_dataframe = self.dataframe_util.high_water_mark_filter(merged_data, previous_run_time)
+
+        # This needs to be better...
+        filtered_dataframe["match_id"] = [self.id_generator.generate_uuid() for _ in range(len(dataframe.index))]
 
         if filtered_dataframe.empty:
             self.logger.info("Dataframe is empty, will not attempt to write")
