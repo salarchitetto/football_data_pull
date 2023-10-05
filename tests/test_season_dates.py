@@ -7,7 +7,7 @@ class TestSeasonDates(unittest.TestCase):
     def setUp(self) -> None:
         self.configs = Configurator()
         self.season_dates = SeasonDates(self.configs)
-        self.season_list = ["2223", "2122", "2021", "1920",
+        self.season_list = ["2324","2223", "2122", "2021", "1920",
                             "1819", "1718", "1617", "1516",
                             "1415", "1314", "1213", "1112",
                             "1011", "910", "89", "78", "67",
