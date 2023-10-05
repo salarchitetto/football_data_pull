@@ -40,7 +40,7 @@ class TestSeasonDates(unittest.TestCase):
 
     def test_get_current_season_download_paths(self):
         path = self.season_dates.get_current_season_download_path()
-        self.assertEqual(path, "https://www.football-data.co.uk/mmz4281/2223/None.csv")
+        self.assertEqual(path, "https://www.football-data.co.uk/mmz4281/2324/None.csv")
 
     def test_multiple_season_download_paths(self):
         seasons = self.season_dates.get_multiple_season_download_paths(self.season_path_list_check)
