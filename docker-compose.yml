@@ -3,12 +3,18 @@ services:
   db:
     image: postgres:13.4-alpine
     container_name: postgres_footy_db
+    networks:
+      - footy_network
     env_file:
       - .env
     volumes:
       - postgres-db:/data/postgres
     ports:
      - "5432:5432"
+
+networks:
+  footy_network:
+    external: true
 
 volumes:
   postgres-db:

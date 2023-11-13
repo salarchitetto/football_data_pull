@@ -39,7 +39,7 @@ class SeasonDates:
 
     @staticmethod
     def format_season_string(date: str) -> str:
-        return f"{date[:2]}/{date[2:]}"
+        return f"{date[:2]}-{date[2:]}"
 
     def get_current_season_download_path(self) -> str:
         return f"{self.configs.download_link}/{self.configs.link_constant}/{self.get_this_season()}/{self.configs.excel_path}.csv"

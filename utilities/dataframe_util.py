@@ -112,11 +112,18 @@ class DataframeUtil:
     def remove_null_team_rows(dataframe: pd.DataFrame) -> DataFrame:
         return dataframe[dataframe[["hometeam", "awayteam"]].notnull().all(1)]
 
+    @staticmethod
+    def clean_team_names(dataframe: pd.DataFrame) -> DataFrame:
+        dataframe[['hometeam', 'awayteam']] = (dataframe[['hometeam', 'awayteam']]
+                                               .apply(lambda x: x.str.replace(' ', '_').str.lower()))
+        return dataframe
+
     def clean_dataframe(self, dataframe: pd.DataFrame, league_name: str) -> DataFrame:
         dataframe = self.convert_div_name(dataframe, league_name)
         dataframe = self.column_util.remove_col_name_string_starts_with(dataframe, "unnamed")
         dataframe = self.replace_values_in_dataframe_with_none(dataframe, "#")
         dataframe = self.replace_values_team_rows(dataframe, "'")
+        dataframe = self.clean_team_names(dataframe)
         dataframe = self.remove_null_team_rows(dataframe)
         dataframe = self.dataframe_datetime_polisher(dataframe)
         dataframe = self.add_high_watermark(dataframe)
