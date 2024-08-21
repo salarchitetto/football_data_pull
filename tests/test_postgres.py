@@ -1,6 +1,6 @@
 import testing.postgresql
 import unittest
-from utilities.postgres.postgres_utils import PostgresUtils
+from postgres.postgres_utils import PostgresUtils
 import pandas as pd
 
 

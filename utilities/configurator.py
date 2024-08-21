@@ -1,19 +1,7 @@
 from typing import List, Final
 
-from configuration.configuration_enums import Source
+
 from utilities.logger import Logger
-
-
-# TODO: Make this read from new source configuration files
-
-class NewConfigurator:
-    def __init__(self, source: Source):
-        self.source = source
-        self.logger = Logger(logger_name="Configurator")
-
-    def _setter(self): ...
-
-    def _getter(self): ...
 
 
 class Configurator:

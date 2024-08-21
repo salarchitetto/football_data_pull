@@ -1,6 +1,6 @@
 import unittest
 from utilities.configurator import Configurator
-from utilities.season_dates import SeasonDates
+from football_data_uk.season_dates import SeasonDates
 
 
 class TestSeasonDates(unittest.TestCase):

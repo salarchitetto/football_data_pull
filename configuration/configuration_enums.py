@@ -1,9 +1,10 @@
 """
-
+A bunch of configuration methods and classes for the application.
+Will write more as I go.
 """
 
 from enum import Enum
-from typing import Union
+from typing import Optional
 from dataclasses import dataclass
 
 
@@ -22,12 +23,33 @@ class SourceData:
     alternative_name: str
     website_link: str
     source_type: SourceType
-    excel_file_name: Union[str, None]  # Mainly for the UK website data
+    excel_file_name: Optional[str]  # Mainly for the UK website data
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.alternative_name, str):
+            raise TypeError(f"Expected String, got {type(self.alternative_name)}")
+
+        if not isinstance(self.website_link, str):
+            raise TypeError(f"Expected String, got {type(self.website_link)}")
+
+        if not isinstance(self.source_type, SourceType):
+            raise TypeError(f"Expected SourceType, got {type(self.source_type)}")
+
+        if not (self.excel_file_name is None or isinstance(self.excel_file_name, str)):
+            raise TypeError(f"Expected String or None, got {type(self.excel_file_name)}")
+
+    @property
+    def excel_link(self) -> str:
+        return f"{self.website_link}/{self.excel_file_name}"
 
 
 @dataclass
 class LeagueData:
-    excel_identifier_name: Union[str, None]
+    excel_identifier_name: str
+
+    def __post_init__(self) -> None:
+        if not isinstance(self.excel_identifier_name, str):
+            raise TypeError(f"Expected String, got {type(self.excel_identifier_name)}")
 
 
 class Source(Enum):
@@ -43,7 +65,7 @@ class Source(Enum):
         alternative_name="football_data_uk",
         website_link="https://www.football-data.co.uk",
         source_type=SourceType.EXCEL,
-        excel_file_name="mmz4281",
+        excel_file_name="mmz4281"
     )
 
     @classmethod

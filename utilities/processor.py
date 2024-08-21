@@ -1,9 +1,9 @@
 from utilities.id_generator import TeamIDGenerator
-from utilities.postgres.postgres_utils import PostgresUtils
+from postgres.postgres_utils import PostgresUtils
 from utilities.configurator import Configurator
 from utilities.dataframe_util import DataframeUtil
 from utilities.logger import Logger
-from utilities.season_dates import SeasonDates
+from football_data_uk.season_dates import SeasonDates
 
 
 class Processor:
