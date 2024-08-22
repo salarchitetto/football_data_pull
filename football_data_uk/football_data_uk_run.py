@@ -4,7 +4,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from configuration.football_data_uk_configuration import football_data_uk
-from football_data_uk.season_dates import SeasonDates
+from football_data_uk.season_formatter import SeasonDates
 from utilities.logger import Logger
 from configuration.configurator import Configurator
 

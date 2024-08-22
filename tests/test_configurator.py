@@ -37,5 +37,3 @@ class TestConfigurator(unittest.TestCase):
     def test_excel_identifiers(self):
         print(self.conf.excel_identifier)
 
-    def test_country_link(self):
-        print(self.conf.country_link)

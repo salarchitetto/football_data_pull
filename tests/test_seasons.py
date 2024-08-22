@@ -2,7 +2,7 @@ import unittest
 
 from configuration.configuration_enums import Country, Leagues, Source, SourceType
 from configuration.configurator import Configurator
-from football_data_uk.season_dates import SeasonDates
+from football_data_uk.season_formatter import SeasonDates
 
 
 class TestConfigurator(unittest.TestCase):
@@ -22,13 +22,13 @@ class TestConfigurator(unittest.TestCase):
         self.conf_without_limit = Configurator(self.test_conf, Country.ENGLAND, Leagues.PREMIER_LEAGUE)
         self.season_dates_without_limit = SeasonDates(self.conf_without_limit)
         self.conf_with_limit = Configurator(self.test_conf, Country.ENGLAND, Leagues.PREMIER_LEAGUE)
-        self.season_dates_with_limit = SeasonDates(self.conf_with_limit, 5)
-
-    def test_get_current_season_link(self):
-        print(self.season_dates_without_limit.get_current_season_download_path())
+        self.season_dates_with_limit = SeasonDates(self.conf_with_limit, 100)
 
     def test_multiple_paths(self):
-        print(self.season_dates_without_limit.get_multiple_season_download_paths())
+        print(self.season_dates_without_limit.get_csv_download_paths())
 
     def test_limit_multiple_paths(self):
-        print(self.season_dates_with_limit.get_multiple_season_download_paths())
+        print(self.season_dates_with_limit.get_csv_download_paths())
+
+    def test_formatted_seasons_list(self):
+        print(self.season_dates_with_limit.get_formatted_seasons_list())
