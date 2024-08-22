@@ -9,8 +9,6 @@ from utilities.logger import Logger
 from configuration.configurator import Configurator
 
 logger = Logger("NORMAL_RUN")
-# TODO: check limit, we should be able to pass in 1 or 20
-#  if its set to one it should run the most recent season, if not just run the selected limit amount.
 
 
 def main() -> None:
