@@ -2,6 +2,7 @@ from datetime import datetime
 from typing import List
 
 from configuration.configurator import Configurator
+from utilities.logger import Logger
 
 
 class SeasonDates:
@@ -29,6 +30,7 @@ class SeasonDates:
         self.year_end = list(range(self.current_year + 1, -1, -1))
         self.year_start = list(range(self.current_year, -1, -1))
         self.number_of_seasons = number_of_seasons
+        self.logger = Logger(SeasonDates.__name__)
 
     @property
     def number_of_seasons(self) -> int:
@@ -46,6 +48,7 @@ class SeasonDates:
         
         :param value: The number of seasons.
         """
+        assert value > 0, self.logger.error("Value must be greater than 0.")
         self._number_of_seasons = value
 
     @property

@@ -35,3 +35,5 @@ typing_extensions==4.5.0
 urllib3==1.26.14
 wsproto==1.2.0
 structlog~=23.1.0
+setuptools~=68.0.0
+polars~=0.19.12

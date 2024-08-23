@@ -3,7 +3,7 @@ from postgres.postgres_utils import PostgresUtils
 from utilities.configurator import Configurator
 from utilities.dataframe_util import DataframeUtil
 from utilities.logger import Logger
-from football_data_uk.season_formatter import SeasonDates
+from utilities.season_formatter import SeasonDates
 
 
 class Processor:
