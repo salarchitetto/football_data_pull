@@ -1,8 +1,7 @@
 import unittest
 
-from polars import polars
 
-from configuration.configuration_enums import Country, Leagues, Source
+from configuration.configuration_enums import Country, Leagues
 from configuration.configurator import Configurator
 from configuration.football_data_uk_configuration import football_data_uk, FOOTBALL_DATA_UK_MAPPING
 from utilities.footy_dataframes import read_csv, add_new_static_column, convert_column_name, \

@@ -1,3 +1,9 @@
+"""
+Deprecated.
+Project has been completely ported over to Polars.
+Going to keep this here for the time being and possibly
+convert it over into Polars Dataframes.
+"""
 import pandas as pd
 
 

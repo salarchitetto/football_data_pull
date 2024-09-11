@@ -9,23 +9,38 @@ from dataclasses import dataclass
 
 
 class SourceType(Enum):
+    """
+    The source type for the incoming data.
+    """
     EXCEL = 0
     API = 1
     SCRAPER = 2
 
     @classmethod
     def from_name(cls, source_type: str) -> "SourceType":
+        """Return a lowered string version of the above enums.
+
+        :param source_type: source type name.
+        :return: return the name of the source type.
+        """
         return cls[source_type.lower()]
 
 
 @dataclass
 class SourceData:
+    """
+    Some base information for the source data.
+    """
     alternative_name: str
     website_link: str
     source_type: SourceType
     excel_file_name: Optional[str]  # Mainly for the UK website data
 
     def __post_init__(self) -> None:
+        """Making sure our values adhere to the types instantiated above.
+
+        :return: None
+        """
         if not isinstance(self.alternative_name, str):
             raise TypeError(f"Expected String, got {type(self.alternative_name)}")
 
@@ -40,6 +55,11 @@ class SourceData:
 
     @property
     def excel_link(self) -> str:
+        """Return an Excel link (Used for football_data_uk).
+
+        :return: Path to the starter of an Excel link.
+        The rest is created via the SeasonFormatter
+        """
         return f"{self.website_link}/{self.excel_file_name}"
 
 
@@ -70,6 +90,11 @@ class Source(Enum):
 
     @classmethod
     def from_name(cls, source_name: str) -> "Source":
+        """Return a lowered string version of the above enums.
+
+        :param source_name: source type name.
+        :return: return the name of the source type.
+        """
         try:
             return cls[source_name.lower()]
         except KeyError as ke:
@@ -77,6 +102,9 @@ class Source(Enum):
 
 
 class Country(Enum):
+    """
+    Country Enums that are provided in this application.
+    """
     BELGIUM = 0
     ENGLAND = 1
     FRANCE = 2
@@ -115,4 +143,9 @@ class Leagues(Enum):
 
     @classmethod
     def from_name(cls, league_name: str) -> "Leagues":
+        """Return a lowered string version of the above enums.
+
+        :param league_name: source type name.
+        :return: return the name of the source type.
+        """
         return cls[league_name.lower()]

@@ -1,7 +1,6 @@
 from typing import Optional
 
 from configuration.configuration_enums import Country, SourceType, Leagues
-from configuration.football_data_uk_configuration import football_data_uk
 
 
 class Configurator:
@@ -123,6 +122,3 @@ class Configurator:
         :return: The Excel file name or None if not available.
         """
         return self.conf["source_information"].value.excel_file_name
-
-
-configurator = Configurator(football_data_uk, Country.SPAIN, Leagues.LA_LIGA)

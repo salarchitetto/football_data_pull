@@ -1,128 +1,139 @@
-from typing import List
+import traceback
+from typing import Optional, Any
 
-import pandas as pd
-from sqlalchemy import create_engine
+import polars as pl
+from psycopg2.extras import RealDictCursor
 from dotenv import load_dotenv
 import psycopg2
 import os
-from utilities.dataframe_util import DataframeUtil, ColumnUtils
 from utilities.logger import Logger
 
 
-class PostgresUtils:
+class FootyPostgres:
+    """
+    A utility class for managing PostgreSQL connections, executing queries,
+    and interacting with Polars DataFrames.
+    """
 
-    def __init__(self, table_name: str = None):
-        self.dotEnv = load_dotenv()
+    def __init__(self, query: Optional[str] = None, table_name: Optional[str] = None):
+        load_dotenv()
+        self.query = query
+        self.table_name = table_name
         self.db_name = os.getenv("POSTGRES_DB")
         self.host = os.getenv("POSTGRES_HOST")
         self.user = os.getenv("POSTGRES_USER")
         self.password = os.getenv("POSTGRES_PASSWORD")
         self.port = os.getenv("POSTGRES_PORT")
-        self.logger = Logger(logger_name="PostgresUtils")
-        self.column_util = ColumnUtils()
-        if table_name:
-            self.table_name = table_name
-        else:
-            self.table_name = os.getenv("TABLE_NAME")
+        self.uri = f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.db_name}"
+        self.logger = Logger(logger_name="FootyPostgres")
 
-    def connection(self):
+    def _connect(self):
+        """
+        Establishes and returns a PostgreSQL database connection.
+
+        :return: A psycopg2 connection object.
+        """
         try:
             return psycopg2.connect(
                 host=self.host,
                 database=self.db_name,
                 user=self.user,
                 password=self.password,
-                port=self.port
+                port=self.port,
+                cursor_factory=RealDictCursor
             )
         except psycopg2.Error as e:
-            self.logger.error(f"An error has occurred connecting to postgres: {e}")
+            self.logger.error(f"Failed to connect to PostgreSQL: {e}")
+            self.logger.error(traceback.format_exc())
+            raise
 
-    def create_engine(self):
-        return create_engine(f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.db_name}")
+    def __enter__(self):
+        """
+        Enters the runtime context for the connection, returning the connection and cursor.
 
-    def execute(self, query: str) -> None:
-        connection = self.connection()
-        cursor = connection.cursor()
+        :return: A tuple of the connection and cursor objects.
+        """
+        self.conn = self._connect()
+        self.cur = self.conn.cursor()
+        return self.conn, self.cur
 
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        """
+        Closes the cursor and connection when exiting the runtime context.
+
+        :param exc_type: The type of the exception.
+        :param exc_val: The value of the exception.
+        :param exc_tb: The traceback object.
+        :return: None
+        """
+        if self.cur:
+            self.cur.close()
+        if self.conn:
+            self.conn.close()
+        if exc_type is not None:
+            self.logger.error(f"Exception during database operation: {exc_type}, {exc_val}")
+            self.logger.error(traceback.format_exc())
+
+    def execute(self, query: str, params: Optional[tuple] = None, fetch_results: bool = False) -> tuple[Any, list[Any]]:
+        """
+        Executes a SQL query and optionally fetches the results.
+
+        :param query: The SQL query to execute.
+        :param params: A tuple of parameters to substitute in the query.
+        :param fetch_results: A boolean flag indicating whether to fetch and return query results.
+        :return: A list of dictionaries representing the fetched rows if fetch_results is True, otherwise None.
+        """
         try:
-            self.logger.info(f"executing query: {query}")
-            cursor.execute(query)
-            connection.commit()
+            with self as (conn, cursor):
+                cursor.execute(query, params)
+                conn.commit()
+                if fetch_results:
+                    columns = [desc[0] for desc in cursor.description]
+                    rows = cursor.fetchall()
+                    return rows, columns
+                self.logger.info(f"Successfully executed query. {cursor.description}")
         except Exception as e:
-            self.logger.error(f"An error has occurred executing the query provided: {e}")
+            self.logger.error(f"Exception during database operation: {e}")
+            raise
 
-    def grab_data(self, query: str) -> pd.DataFrame:
-        connection = self.connection()
-        cursor = connection.cursor()
+    def fetch_dataframe(self, query: str, params: Optional[tuple] = None) -> pl.DataFrame:
+        """
+        Executes a SQL query and returns the results as a Polars DataFrame.
 
-        try:
-            cursor.execute(query)
-            results = cursor.fetchall()
-            results_columns = [col[0] for col in cursor.description]
-            dataframe = pd.DataFrame(results, columns=results_columns)
-            return dataframe
-        except Exception as e:
-            self.logger.error(f"An error has occurred: {e}")
+        :param query: The SQL query to execute.
+        :param params: A tuple of parameters to substitute in the query.
+        :return: A Polars DataFrame containing the query results.
+        """
+        rows, columns = self.execute(query=query, params=params, fetch_results=True)
+        return pl.DataFrame(data=rows, schema={col: pl.Utf8 for col in columns})
 
-    # TODO: Move this to other Class, this should just be a create table method or something
-    def create_table_from_existing_dataframe(self, dataframe) -> None:
-        df = self.column_util.remove_col_name_string_starts_with(dataframe, "unnamed")
-        columns = self.add_quotes(df.columns)
-        data_types = DataframeUtil().grab_dtypes(df)
+    def _schema_creator(self, cursor_information):
+        pass
 
+    def post_dataframe(self, dataframe: pl.DataFrame, table_name: str) -> None:
+        """
+        Inserts the contents of a Polars DataFrame into a PostgreSQL table.
+
+        :param dataframe: The Polars DataFrame to insert.
+        :param table_name: The name of the PostgreSQL table to insert the data into.
+        :return: None
+        """
+        dataframe.write_database(table_name=table_name, connection=self.uri, if_table_exists="append")
+
+    def check_if_table_exists(self, table_name: str) -> bool:
+        """Checks if a PostgreSQL table exists.
+
+        :param table_name: The name of the table to check.
+        :return: Boolean flag indicating if the table exists.
+        """
         query = f"""
-            CREATE TABLE IF NOT EXISTS {self.table_name} (
-                {' ,'.join(' '.join(x) for x in zip(columns, data_types))}
-            )
-        """
-        self.execute(query)
-
-    def upload_dataframe(self, dataframe: pd.DataFrame, msg: str = None) -> None:
-        try:
-            self.logger.info(f"Writing Dataframe to postgres table {self.db_name}.{self.table_name}: {msg}")
-            dataframe.to_sql(name=self.table_name, con=self.create_engine(), if_exists="append", index=False)
-            self.connection().commit()
-            self.connection().close()
-        except Exception as e:
-            self.logger.error(f"An error has occurred: {e}")
-
-    def grab_table_schema(self) -> List[str]:
-        query = f"""
-            select column_name from information_schema.columns 
-            where table_name='{self.table_name}';
+            SELECT EXISTS (
+                SELECT 1
+                FROM pg_tables
+                WHERE tablename = '{table_name}'
+            ) AS table_existence;
         """
 
-        return self.grab_data(query)['column_name'].tolist()
-
-    def get_high_water_mark_time(self, league_name: str) -> str:
-        # Use this to get the high water-mark column for a given league
-        query = f"""
-            select max(date) as max_date from {self.table_name} where division = '{league_name}'
-        """
-        dataframe = self.grab_data(query)
-        return dataframe['max_date'].iloc[0]
-
-    def create_distinct_teams_table(self) -> None:
-        query: str = f"""
-            CREATE TABLE IF NOT EXISTS teams AS SELECT DISTINCT(home_team) as team_name, home_id as team_id 
-            from {self.table_name}
-        """
-
-        self.execute(query)
-
-    def get_existing_team_ids(self, list_of_teams: List[str]) -> pd.DataFrame:
-        query = f"""
-            SELECT team_name, team_id FROM teams 
-            WHERE team_name IN ({','.join(self.add_quotes(list_of_teams, True))})
-        """
-
-        _ids = self.grab_data(query)
-
-        return _ids
-
-    @staticmethod
-    def add_quotes(lst: List[str], single_quote: bool = None) -> List[str]:
-        if single_quote:
-            return [f"'{item}'" for item in lst]
-        else:
-            return [f'"{item}"' for item in lst]
+        result = self.execute(query=query, fetch_results=True)
+        self.logger.info(f"Table exists: {result}")
+        return result[0]["table_existence"]
