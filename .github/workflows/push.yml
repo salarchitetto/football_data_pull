@@ -21,7 +21,7 @@ jobs:
             cache: "pip"
 
         - name: Install dependencies
-          run: make install-dependencies
+          run: pip install mypy black isort ruff
 
         - name: Get Changed Files
           id: changed-python-files
@@ -41,12 +41,12 @@ jobs:
             make black-format-check FILES="${{ steps.changed-python-files.outputs.all_changed_files }}"
             make isort-import-check FILES="${{ steps.changed-python-files.outputs.all_changed_files }}"
 
-#        - name: Typecheck
-#          if: always() && steps.changed-python-files.outputs.any_changed == 'true'
-#          run: make mypy-check FILES="${{ steps.changed-python-files.outputs.all_changed_files }}"
-
         - name: Lint
           if: always() && steps.changed-python-files.outputs.any_changed == 'true'
           run: make ruff-lint-check FILES="${{ steps.changed-python-files.outputs.all_changed_files }}"
+
+        #        - name: Typecheck
+        #          if: always() && steps.changed-python-files.outputs.any_changed == 'true'
+        #          run: make mypy-check FILES="${{ steps.changed-python-files.outputs.all_changed_files }}"
 
 # TODO: Write tests + make files for the tests.
