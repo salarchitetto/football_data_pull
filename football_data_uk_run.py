@@ -105,10 +105,6 @@ def main() -> None:
                 logger.info("")
 
 
-def atest(name: str) -> None:
-    print(name)
-
-
 if __name__ == "__main__":
     full_start_time = datetime.now()
     main()
