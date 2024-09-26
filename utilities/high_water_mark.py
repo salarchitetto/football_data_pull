@@ -1,6 +1,9 @@
+"""High WaterMark Processor module."""
+
 from datetime import datetime
-from dateutil.relativedelta import relativedelta
+
 import polars as pl
+from dateutil.relativedelta import relativedelta
 from polars import col
 
 from configuration.configuration_enums import Leagues
@@ -9,12 +12,15 @@ from utilities.logger import Logger
 
 
 class HighWaterMarkProcessor:
-    """
-    This should store all the HWM stuff for the code
-    should be used throughout all sources
-    """
+    """High WaterMark Processor module for managing and processing football data."""
 
-    def __init__(self, dataframe: pl.DataFrame, table_name: str, league_name: Leagues, season: str):
+    def __init__(
+        self,
+        dataframe: pl.DataFrame,
+        table_name: str,
+        league_name: Leagues,
+        season: str,
+    ):
         """
         Initialize the HighWaterMarkProcessor.
 
@@ -40,9 +46,9 @@ class HighWaterMarkProcessor:
         :return: The date of the highest watermark or the initial ingestion date.
         """
         query = f"""
-            select 
-            max(date) as max_date 
-            from {self.table_name} 
+            select
+            max(date) as max_date
+            from {self.table_name}
             where league_name = '{self.league_name.name.lower()}'
             and season = '{self.season}'
         """
@@ -53,7 +59,10 @@ class HighWaterMarkProcessor:
             self.logger.info(f"HWM exists in DB, setting it as {hwm}")
             return hwm
         else:
-            self.logger.info(f"HWM does not exist in DB, setting to initial timestamp {self.initial_ingestion_date}")
+            self.logger.info(
+                f"""HWM does not exist in DB,
+                setting to initial timestamp {self.initial_ingestion_date}"""
+            )
             return self.initial_ingestion_date
 
     def get_filtered_dataframe(self):

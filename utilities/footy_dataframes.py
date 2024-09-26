@@ -1,16 +1,21 @@
+"""Polars Dataframe Methods."""
+
 from datetime import datetime
-from typing import List, Dict
+from typing import Dict, List
 
 import polars as pl
-from polars import lit, col
+from polars import col, lit
 
-from configuration.configuration_enums import SourceType, Leagues
+from configuration.configuration_enums import Leagues, SourceType
 from configuration.football_data_uk_configuration import FOOTBALL_DATA_UK_MAPPING
 from utilities.logger import Logger
 
 logger: Logger = Logger("FootyDataframes")
 
-def dataframe_cleanser(source_type: SourceType, path: str, league_name: Leagues, season: str) -> pl.DataFrame:
+
+def dataframe_cleanser(
+    source_type: SourceType, path: str, league_name: Leagues, season: str
+) -> pl.DataFrame:
     """
     Clean the DataFrame based on the source type.
 
@@ -32,7 +37,9 @@ def dataframe_cleanser(source_type: SourceType, path: str, league_name: Leagues,
         )
         logger.info(f"Cleaning up provided dataframe via: {SourceType.EXCEL} | {path}")
     else:
-        raise ValueError("Source type must be either Excel or CSV, or it has not been implemented yet.")
+        raise ValueError(
+            "Source type must be either Excel or CSV, or it has not been implemented yet."
+        )
 
     return dataframe_to_clean
 
@@ -44,10 +51,14 @@ def read_csv(path: str) -> pl.DataFrame:
     :param path: The file path to the CSV. If not provided, uses the instance's path attribute.
     :return: A Polars DataFrame.
     """
-    return pl.read_csv(path, ignore_errors=True, try_parse_dates=True, truncate_ragged_lines=True)
+    return pl.read_csv(
+        path, ignore_errors=True, try_parse_dates=True, truncate_ragged_lines=True
+    )
 
 
-def add_new_static_column(dataframe: pl.DataFrame, new_column_name: str, static_value: str) -> pl.DataFrame:
+def add_new_static_column(
+    dataframe: pl.DataFrame, new_column_name: str, static_value: str
+) -> pl.DataFrame:
     """
     Add a new column with a static value to the DataFrame.
 
@@ -59,7 +70,9 @@ def add_new_static_column(dataframe: pl.DataFrame, new_column_name: str, static_
     return dataframe.with_columns(pl.lit(static_value).alias(new_column_name))
 
 
-def convert_column_name(dataframe: pl.DataFrame, new_column_name: str, old_column_name: str) -> pl.DataFrame:
+def convert_column_name(
+    dataframe: pl.DataFrame, new_column_name: str, old_column_name: str
+) -> pl.DataFrame:
     """
     Rename a column in the DataFrame.
 
@@ -71,7 +84,9 @@ def convert_column_name(dataframe: pl.DataFrame, new_column_name: str, old_colum
     return dataframe.rename({old_column_name: new_column_name})
 
 
-def rename_multiple_column_names(dataframe: pl.DataFrame, columns_to_rename: Dict[str, str]) -> pl.DataFrame:
+def rename_multiple_column_names(
+    dataframe: pl.DataFrame, columns_to_rename: Dict[str, str]
+) -> pl.DataFrame:
     """
     Rename multiple columns in the DataFrame based on a mapping dictionary.
 
@@ -80,12 +95,17 @@ def rename_multiple_column_names(dataframe: pl.DataFrame, columns_to_rename: Dic
     :return: The DataFrame with columns renamed.
     """
     current_columns = dataframe.columns
-    filtered_columns_to_rename = {col: new_name["mapped_column_name"] for col, new_name in columns_to_rename.items()
-                                  if col in current_columns}
+    filtered_columns_to_rename = {
+        col: new_name["mapped_column_name"]
+        for col, new_name in columns_to_rename.items()
+        if col in current_columns
+    }
     return dataframe.rename(filtered_columns_to_rename)
 
 
-def select_columns_that_exist(dataframe: pl.DataFrame, columns_to_select: Dict[str, str]) -> pl.DataFrame:
+def select_columns_that_exist(
+    dataframe: pl.DataFrame, columns_to_select: Dict[str, str]
+) -> pl.DataFrame:
     """
     Select columns that exist in the DataFrame based on a dictionary of column names.
 
@@ -94,13 +114,18 @@ def select_columns_that_exist(dataframe: pl.DataFrame, columns_to_select: Dict[s
     :return: The DataFrame with only the selected columns.
     """
     current_columns = dataframe.columns
-    filtered_columns_to_select = [col["mapped_column_name"] for col in columns_to_select.values()
-                                  if col["mapped_column_name"] in current_columns]
+    filtered_columns_to_select = [
+        col["mapped_column_name"]
+        for col in columns_to_select.values()
+        if col["mapped_column_name"] in current_columns
+    ]
 
     return dataframe.select(filtered_columns_to_select)
 
 
-def convert_unformatted_dates(dataframe: pl.DataFrame, date_column: str, new_format: str) -> pl.DataFrame:
+def convert_unformatted_dates(
+    dataframe: pl.DataFrame, date_column: str, new_format: str
+) -> pl.DataFrame:
     """
     Convert a date column to a different format.
 
@@ -109,18 +134,10 @@ def convert_unformatted_dates(dataframe: pl.DataFrame, date_column: str, new_for
     :param new_format: The desired date format.
     :return: A new Polars DataFrame with the date column reformatted.
     """
-    return (
-        dataframe
-        .with_columns(
-            pl.col(date_column)
-            .dt.strftime(new_format)
-            .alias(date_column)
-        )
-        .with_columns(
-            pl.col(date_column)
-            .str.to_date(format="%y-%m-%d")
-            .alias(date_column)
-        )
+    return dataframe.with_columns(
+        pl.col(date_column).dt.strftime(new_format).alias(date_column)
+    ).with_columns(
+        pl.col(date_column).str.to_date(format="%y-%m-%d").alias(date_column)
     )
 
 
@@ -132,22 +149,21 @@ def clean_team_names(dataframe: pl.DataFrame, column_names: List[str]) -> pl.Dat
     :param column_names: A list of column names containing team names.
     :return: The DataFrame with cleaned team names.
     """
-    return (
-        dataframe
-        .with_columns(
-            [
-                pl.col(column)
-                .str.replace(" ", "_")
-                .str.replace("'", "`")
-                .str.to_lowercase()
-                .alias(column)
-                for column in column_names
-            ]
-        )
+    return dataframe.with_columns(
+        [
+            pl.col(column)
+            .str.replace(" ", "_")
+            .str.replace("'", "`")
+            .str.to_lowercase()
+            .alias(column)
+            for column in column_names
+        ]
     )
 
 
-def add_missing_columns(dataframe: pl.DataFrame, column_mappings: Dict[str, Dict[str, str]]) -> pl.DataFrame:
+def add_missing_columns(
+    dataframe: pl.DataFrame, column_mappings: Dict[str, Dict[str, str]]
+) -> pl.DataFrame:
     """
 
     :param dataframe: A Footy Dataset to manipulate.
@@ -155,13 +171,20 @@ def add_missing_columns(dataframe: pl.DataFrame, column_mappings: Dict[str, Dict
     :return:
     """
     current_columns = dataframe.columns
-    columns_that_dont_exist = [col["mapped_column_name"] for col in column_mappings.values()
-                               if col["mapped_column_name"] not in current_columns]
+    columns_that_dont_exist = [
+        col["mapped_column_name"]
+        for col in column_mappings.values()
+        if col["mapped_column_name"] not in current_columns
+    ]
 
-    return dataframe.with_columns(lit(None).alias(str(col)) for col in columns_that_dont_exist)
+    return dataframe.with_columns(
+        lit(None).alias(str(col)) for col in columns_that_dont_exist
+    )
 
 
-def get_unique_team_names(dataframe: pl.DataFrame, home_team_col: str, away_team_col: str) -> List[str]:
+def get_unique_team_names(
+    dataframe: pl.DataFrame, home_team_col: str, away_team_col: str
+) -> List[str]:
     """Convert unique team names to a list.
 
     :param dataframe: a polars dataframe with footy data
@@ -169,5 +192,9 @@ def get_unique_team_names(dataframe: pl.DataFrame, home_team_col: str, away_team
     :param away_team_col: away team column name
     :return: List of unique team names.
     """
-    unique_teams = dataframe.select([home_team_col, away_team_col]).melt().select(col("value").unique())
+    unique_teams = (
+        dataframe.select([home_team_col, away_team_col])
+        .melt()
+        .select(col("value").unique())
+    )
     return [name for name in unique_teams.to_series().to_list() if name]

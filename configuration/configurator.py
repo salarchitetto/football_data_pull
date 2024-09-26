@@ -1,12 +1,20 @@
+"""Configuration module for handling configuration.
+
+Specific to country and league.
+"""
+
 from typing import Optional
 
-from configuration.configuration_enums import Country, SourceType, Leagues
+from configuration.configuration_enums import Country, Leagues, SourceType
 
 
 class Configurator:
-    """
-    The Configurator class handles the configuration data for a specific country and league.
-    It provides access to various attributes such as league names, Excel identifiers, and source information.
+    """The Configurator class handles the configuration.
+
+    data for a specific country and league.
+
+    It provides access to various attributes such as league names,
+    Excel identifiers, and source information.
 
     Attributes:
         country (Country): The country for which the configuration is being accessed.
@@ -16,7 +24,7 @@ class Configurator:
 
     def __init__(self, conf: dict, country: Country, league: Leagues):
         """
-        Initializes the Configurator instance with the given configuration, country, and league.
+        Initialize the Configurator instance with the given configuration, country, and league.
 
         :param conf: A dictionary containing configuration data for various countries.
         :param country: The country for which the configuration is being accessed.
@@ -28,14 +36,18 @@ class Configurator:
         self.conf = conf.get(self.country)
 
         if not self.conf:
-            raise ValueError(f"Configuration for country {self.country.name} not found.")
+            raise ValueError(
+                f"Configuration for country {self.country.name} not found."
+            )
 
         if self.league not in self.conf.get("leagues", []):
-            raise ValueError(f"League '{self.league.name}' is not part of the configuration for country {self.country}.")
+            raise ValueError(
+                f"League '{self.league.name}' is not part of "
+                f"the configuration for country {self.country}."
+            )
 
     def _find_league(self):
-        """
-        Finds and returns the league data for the specified league within the country's configuration.
+        """Find and return the league data for the specified league.
 
         :return: The league data for the specified league.
         :raises ValueError: If the league is not found in the configuration.
@@ -80,11 +92,13 @@ class Configurator:
         Returns the alternative source name for the data source.
 
         :return: The lowercase alternative source name.
-        :raises ValueError: If source information is not found in the configuration.
+        :raises ValueError: Source information is not found in the configuration.
         """
         source_info = self.conf.get("source_information")
         if not source_info:
-            raise ValueError(f"Source information not found in configuration for {self.country_name}.")
+            raise ValueError(
+                f"Source information not found in configuration for {self.country_name}."
+            )
         return source_info.value.alternative_name.lower()
 
     @property

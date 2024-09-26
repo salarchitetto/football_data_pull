@@ -1,33 +1,24 @@
-"""
-football_data_uk configuration dictionary.
-"""
+"""football_data_uk configuration dictionary."""
+
 from datetime import datetime
 
-from configuration.configuration_enums import Source, Country, Leagues
+from configuration.configuration_enums import Country, Leagues, Source
 
 football_data_uk: dict = {
     Country.BELGIUM: {
         "country": Country.BELGIUM,
-        "leagues": [
-            Leagues.BELGIUM_PRO_LEAGUE
-        ],
-        "source_information": Source.FOOTBALL_DATA_UK
+        "leagues": [Leagues.BELGIUM_PRO_LEAGUE],
+        "source_information": Source.FOOTBALL_DATA_UK,
     },
     Country.ENGLAND: {
         "country": Country.ENGLAND,
-        "leagues": [
-            Leagues.PREMIER_LEAGUE,
-            Leagues.CHAMPIONSHIP
-        ],
-        "source_information": Source.FOOTBALL_DATA_UK
+        "leagues": [Leagues.PREMIER_LEAGUE, Leagues.CHAMPIONSHIP],
+        "source_information": Source.FOOTBALL_DATA_UK,
     },
     Country.FRANCE: {
         "country": Country.FRANCE,
-        "leagues": [
-            Leagues.LIGUE_1,
-            Leagues.LIGUE_2
-        ],
-        "source_information": Source.FOOTBALL_DATA_UK
+        "leagues": [Leagues.LIGUE_1, Leagues.LIGUE_2],
+        "source_information": Source.FOOTBALL_DATA_UK,
     },
     Country.GERMANY: {
         "country": Country.GERMANY,
@@ -35,7 +26,7 @@ football_data_uk: dict = {
             Leagues.BUNDESLIGA,
             Leagues.BUNDESLIGA_2,
         ],
-        "source_information": Source.FOOTBALL_DATA_UK
+        "source_information": Source.FOOTBALL_DATA_UK,
     },
     Country.ITALY: {
         "country": Country.ITALY,
@@ -43,29 +34,22 @@ football_data_uk: dict = {
             Leagues.SERIE_A,
             Leagues.SERIE_B,
         ],
-        "source_information": Source.FOOTBALL_DATA_UK
+        "source_information": Source.FOOTBALL_DATA_UK,
     },
     Country.NETHERLANDS: {
         "country": Country.NETHERLANDS,
-        "leagues": [
-            Leagues.EREDIVISIE
-        ],
-        "source_information": Source.FOOTBALL_DATA_UK
+        "leagues": [Leagues.EREDIVISIE],
+        "source_information": Source.FOOTBALL_DATA_UK,
     },
     Country.PORTUGAL: {
         "country": Country.PORTUGAL,
-        "leagues": [
-            Leagues.LIGA_PORTUGAL
-        ],
-        "source_information": Source.FOOTBALL_DATA_UK
+        "leagues": [Leagues.LIGA_PORTUGAL],
+        "source_information": Source.FOOTBALL_DATA_UK,
     },
     Country.SCOTLAND: {
         "country": Country.SCOTLAND,
-        "leagues": [
-            Leagues.SCOTTISH_PREMIERSHIP,
-            Leagues.SCOTTISH_CHAMPIONSHIP
-        ],
-        "source_information": Source.FOOTBALL_DATA_UK
+        "leagues": [Leagues.SCOTTISH_PREMIERSHIP, Leagues.SCOTTISH_CHAMPIONSHIP],
+        "source_information": Source.FOOTBALL_DATA_UK,
     },
     Country.SPAIN: {
         "country": Country.SPAIN,
@@ -73,8 +57,8 @@ football_data_uk: dict = {
             Leagues.LA_LIGA,
             Leagues.LA_LIGA_2,
         ],
-        "source_information": Source.FOOTBALL_DATA_UK
-    }
+        "source_information": Source.FOOTBALL_DATA_UK,
+    },
 }
 
 FOOTBALL_DATA_UK_MAPPING: dict = {
@@ -129,72 +113,183 @@ FOOTBALL_DATA_UK_MAPPING: dict = {
     "AVGA": {"mapped_column_name": "market_average_away_odds", "column_type": float},
     "B365>2.5": {"mapped_column_name": "bet_365_over_2_5_goals", "column_type": float},
     "B365<2.5": {"mapped_column_name": "bet_365_under_2_5_goals", "column_type": float},
-    "P>2.5": {"mapped_column_name": "pinnacle_over_2_5_goals_odds", "column_type": float},
-    "P<2.5": {"mapped_column_name": "pinnacle_under_2_5_goals_odds", "column_type": float},
-    "MAX>2.5": {"mapped_column_name": "market_maximum_over_2_5_goals_odds", "column_type": float},
-    "MAX<2.5": {"mapped_column_name": "market_maximum_under_2_5_goals_odds", "column_type": float},
-    "AVG>2.5": {"mapped_column_name": "market_average_over_2_5_goals_odds", "column_type": float},
-    "AVG<2.5": {"mapped_column_name": "market_average_under_2_5_goals_odds", "column_type": float},
-    "AHH": {"mapped_column_name": "market_size_of_handicap_home_odds", "column_type": float},
-    "B365AHH": {"mapped_column_name": "bet_365_asian_handicap_home_odds", "column_type": float},
-    "B365AHA": {"mapped_column_name": "bet_365_asian_handicap_away_odds", "column_type": float},
-    "PAHH": {"mapped_column_name": "pinnacle_asian_handicap_home_odds", "column_type": float},
-    "PAHA": {"mapped_column_name": "pinnacle_asian_handicap_away_odds", "column_type": float},
-    "MAXAHH": {"mapped_column_name": "market_maximum_asian_handicap_home_odds", "column_type": float},
-    "MAXAHA": {"mapped_column_name": "market_maximum_asian_handicap_away_odds", "column_type": float},
-    "AVGAHH": {"mapped_column_name": "market_average_asian_handicap_home_odds", "column_type": float},
-    "AVGAPA": {"mapped_column_name": "market_average_asian_handicap_away_odds", "column_type": float},
+    "P>2.5": {
+        "mapped_column_name": "pinnacle_over_2_5_goals_odds",
+        "column_type": float,
+    },
+    "P<2.5": {
+        "mapped_column_name": "pinnacle_under_2_5_goals_odds",
+        "column_type": float,
+    },
+    "MAX>2.5": {
+        "mapped_column_name": "market_maximum_over_2_5_goals_odds",
+        "column_type": float,
+    },
+    "MAX<2.5": {
+        "mapped_column_name": "market_maximum_under_2_5_goals_odds",
+        "column_type": float,
+    },
+    "AVG>2.5": {
+        "mapped_column_name": "market_average_over_2_5_goals_odds",
+        "column_type": float,
+    },
+    "AVG<2.5": {
+        "mapped_column_name": "market_average_under_2_5_goals_odds",
+        "column_type": float,
+    },
+    "AHH": {
+        "mapped_column_name": "market_size_of_handicap_home_odds",
+        "column_type": float,
+    },
+    "B365AHH": {
+        "mapped_column_name": "bet_365_asian_handicap_home_odds",
+        "column_type": float,
+    },
+    "B365AHA": {
+        "mapped_column_name": "bet_365_asian_handicap_away_odds",
+        "column_type": float,
+    },
+    "PAHH": {
+        "mapped_column_name": "pinnacle_asian_handicap_home_odds",
+        "column_type": float,
+    },
+    "PAHA": {
+        "mapped_column_name": "pinnacle_asian_handicap_away_odds",
+        "column_type": float,
+    },
+    "MAXAHH": {
+        "mapped_column_name": "market_maximum_asian_handicap_home_odds",
+        "column_type": float,
+    },
+    "MAXAHA": {
+        "mapped_column_name": "market_maximum_asian_handicap_away_odds",
+        "column_type": float,
+    },
+    "AVGAHH": {
+        "mapped_column_name": "market_average_asian_handicap_home_odds",
+        "column_type": float,
+    },
+    "AVGAPA": {
+        "mapped_column_name": "market_average_asian_handicap_away_odds",
+        "column_type": float,
+    },
     "SYA": {"mapped_column_name": "stanley_bet_away_odds", "column_type": float},
     "LBH": {"mapped_column_name": "lad_brokes_home_win_odds", "column_type": float},
-    "LBAHH": {"mapped_column_name": "lad_brokes_asian_handicap_odds", "column_type": float},
-    "BBAV>2.5": {"mapped_column_name": "bet_brains_average_over_2_5_goals", "column_type": float},
+    "LBAHH": {
+        "mapped_column_name": "lad_brokes_asian_handicap_odds",
+        "column_type": float,
+    },
+    "BBAV>2.5": {
+        "mapped_column_name": "bet_brains_average_over_2_5_goals",
+        "column_type": float,
+    },
     "SJA": {"mapped_column_name": "stan_james_away_odds", "column_type": float},
-    "BBMX<2.5": {"mapped_column_name": "bet_brain_maximum_under_2_5_goals", "column_type": float},
-    "LBAH": {"mapped_column_name": "lad_brokes_size_of_handicap_home_odds", "column_type": float},
+    "BBMX<2.5": {
+        "mapped_column_name": "bet_brain_maximum_under_2_5_goals",
+        "column_type": float,
+    },
+    "LBAH": {
+        "mapped_column_name": "lad_brokes_size_of_handicap_home_odds",
+        "column_type": float,
+    },
     "SOH": {"mapped_column_name": "sporting_odds_home_win_odds", "column_type": float},
     "BSD": {"mapped_column_name": "blue_square_draw_odds", "column_type": float},
-    "B365AH": {"mapped_column_name": "bet_365_size_handicap_home_odds", "column_type": float},
+    "B365AH": {
+        "mapped_column_name": "bet_365_size_handicap_home_odds",
+        "column_type": float,
+    },
     "SOA": {"mapped_column_name": "sporting_wins_away_win_odds", "column_type": float},
     "SOD": {"mapped_column_name": "sporting_wins_draw_odds", "column_type": float},
     "SBD": {"mapped_column_name": "sporting_bet_draw_odds", "column_type": float},
-    "GBAHA": {"mapped_column_name": "gamebookers_asian_handicap_away_team_odds", "column_type": float},
+    "GBAHA": {
+        "mapped_column_name": "gamebookers_asian_handicap_away_team_odds",
+        "column_type": float,
+    },
     "SJD": {"mapped_column_name": "stan_james_draw_odds", "column_type": float},
-    "GBAHH": {"mapped_column_name": "gamebookers_asian_handicap_home_team_odds", "column_type": float},
+    "GBAHH": {
+        "mapped_column_name": "gamebookers_asian_handicap_home_team_odds",
+        "column_type": float,
+    },
     "HHW": {"mapped_column_name": "home_team_hit_woodwork", "column_type": int},
-    "BBAV<2.5": {"mapped_column_name": "bet_brain_average_under_2_5_goals_odds", "column_type": float},
-    "BBMX>2.5": {"mapped_column_name": "bet_brain_maximum_over_2_5_goals_odds", "column_type": float},
-    "BBAHH": {"mapped_column_name": "bet_brain_size_of_home_handicap", "column_type": float},
-    "BBMXAHH": {"mapped_column_name": "betbrain_maximum_asian_handicap_home_team_odds", "column_type": float},
+    "BBAV<2.5": {
+        "mapped_column_name": "bet_brain_average_under_2_5_goals_odds",
+        "column_type": float,
+    },
+    "BBMX>2.5": {
+        "mapped_column_name": "bet_brain_maximum_over_2_5_goals_odds",
+        "column_type": float,
+    },
+    "BBAHH": {
+        "mapped_column_name": "bet_brain_size_of_home_handicap",
+        "column_type": float,
+    },
+    "BBMXAHH": {
+        "mapped_column_name": "betbrain_maximum_asian_handicap_home_team_odds",
+        "column_type": float,
+    },
     "BSA": {"mapped_column_name": "blue_square_away_win_odds", "column_type": float},
     "AHW": {"mapped_column_name": "away_team_hit_woodwork", "column_type": int},
     "LBA": {"mapped_column_name": "lad_brokes_away_win_odds", "column_type": float},
-    "BBAVH": {"mapped_column_name": "bet_brain_average_home_win_odds", "column_type": float},
+    "BBAVH": {
+        "mapped_column_name": "bet_brain_average_home_win_odds",
+        "column_type": float,
+    },
     "LBD": {"mapped_column_name": "lad_brokes_draw_odds", "column_type": float},
-    "BBAVAHH": {"mapped_column_name": "bet_brain_average_asian_handicap_home_team_odds", "column_type": float},
+    "BBAVAHH": {
+        "mapped_column_name": "bet_brain_average_asian_handicap_home_team_odds",
+        "column_type": float,
+    },
     "BSH": {"mapped_column_name": "blue_square_home_win_odds", "column_type": float},
     "ABP": {"mapped_column_name": "away_team_booking_points", "column_type": int},
-    "BBMXD": {"mapped_column_name": "bet_brain_maximum_draw_odds", "column_type": float},
-    "GBAH": {"mapped_column_name": "game_bookers_size_of_handicap", "column_type": float},
-    "BBAVD": {"mapped_column_name": "bet_brain_average_draw_win_odds", "column_type": float},
+    "BBMXD": {
+        "mapped_column_name": "bet_brain_maximum_draw_odds",
+        "column_type": float,
+    },
+    "GBAH": {
+        "mapped_column_name": "game_bookers_size_of_handicap",
+        "column_type": float,
+    },
+    "BBAVD": {
+        "mapped_column_name": "bet_brain_average_draw_win_odds",
+        "column_type": float,
+    },
     "GBH": {"mapped_column_name": "game_bookers_home_win_odds", "column_type": float},
     "AO": {"mapped_column_name": "away_team_offsides", "column_type": int},
-    "GB>2.5": {"mapped_column_name": "game_bookers_over_2_5_goals_odds", "column_type": float},
+    "GB>2.5": {
+        "mapped_column_name": "game_bookers_over_2_5_goals_odds",
+        "column_type": float,
+    },
     "HBP": {"mapped_column_name": "home_team_booking_points", "column_type": int},
     "SYH": {"mapped_column_name": "stanley_bet_home_win_odds", "column_type": float},
     "SJH": {"mapped_column_name": "stan_james_home_win_odds", "column_type": float},
     "SBA": {"mapped_column_name": "sporting_bet_away_win_odds", "column_type": float},
-    "GB<2.5": {"mapped_column_name": "game_bookers_under_2_5_goals_odds", "column_type": float},
+    "GB<2.5": {
+        "mapped_column_name": "game_bookers_under_2_5_goals_odds",
+        "column_type": float,
+    },
     "HO": {"mapped_column_name": "home_team_offsides", "column_type": int},
-    "LBAHA": {"mapped_column_name": "lad_brokes_asian_handicap_away_team_odds", "column_type": float},
+    "LBAHA": {
+        "mapped_column_name": "lad_brokes_asian_handicap_away_team_odds",
+        "column_type": float,
+    },
     "GBD": {"mapped_column_name": "game_bookers_draw_odds", "column_type": float},
     "SBH": {"mapped_column_name": "sporting_bet_home_win_odds", "column_type": float},
-    "BBMXA": {"mapped_column_name": "bet_brain_maximum_away_win_odds", "column_type": float},
-    "BBMXH": {"mapped_column_name": "bet_brain_maximum_home_team_odds", "column_type": float},
+    "BBMXA": {
+        "mapped_column_name": "bet_brain_maximum_away_win_odds",
+        "column_type": float,
+    },
+    "BBMXH": {
+        "mapped_column_name": "bet_brain_maximum_home_team_odds",
+        "column_type": float,
+    },
     "GBA": {"mapped_column_name": "game_bookers_away_win_odds", "column_type": float},
     "SYD": {"mapped_column_name": "stanley_bet_draw_odds", "column_type": float},
-    "high_water_mark": {"mapped_column_name": "high_water_mark", "column_type": datetime},
+    "high_water_mark": {
+        "mapped_column_name": "high_water_mark",
+        "column_type": datetime,
+    },
     "season": {"mapped_column_name": "season", "column_type": str},
     "home_uuid": {"mapped_column_name": "home_uuid", "column_type": str},
     "away_uuid": {"mapped_column_name": "away_uuid", "column_type": str},
-    "match_uuid": {"mapped_column_name": "match_uuid", "column_type": str}
+    "match_uuid": {"mapped_column_name": "match_uuid", "column_type": str},
 }

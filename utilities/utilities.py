@@ -1,3 +1,5 @@
+"""Basic Utility Methods used throughout the project."""
+
 import builtins
 import datetime
 from enum import Enum
@@ -8,7 +10,9 @@ def generate_create_table_query(table_name: str, mapping_dict: dict) -> str:
     Generates a SQL query to create a table based on a mapping dictionary.
 
     :param table_name: The name of the table to create.
-    :param mapping_dict: A dictionary containing prior column names mapped to new column names and data types.
+    :param mapping_dict: A dictionary containing prior column names
+     mapped to new column names and data types.
+
     The dictionary should have the following structure:
         {
             "old_column_name": {
@@ -52,9 +56,8 @@ def generate_create_table_query(table_name: str, mapping_dict: dict) -> str:
 
 
 class TextColor(Enum):
-    """
+    """Text Colors."""
 
-    """
     RESET = "\033[0m"
     BLACK = "\033[30m"
     RED = "\033[31m"
@@ -67,7 +70,7 @@ class TextColor(Enum):
 
 
 def highlight_text(text, color: TextColor):
-    """
+    """Highlights strings.
 
     :param text:
     :param color:

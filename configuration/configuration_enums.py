@@ -1,17 +1,16 @@
-"""
-A bunch of configuration methods and classes for the application.
+"""A bunch of configuration methods and classes for the application.
+
 Will write more as I go.
 """
 
+from dataclasses import dataclass
 from enum import Enum
 from typing import Optional
-from dataclasses import dataclass
 
 
 class SourceType(Enum):
-    """
-    The source type for the incoming data.
-    """
+    """The source type for the incoming data."""
+
     EXCEL = 0
     API = 1
     SCRAPER = 2
@@ -28,16 +27,15 @@ class SourceType(Enum):
 
 @dataclass
 class SourceData:
-    """
-    Some base information for the source data.
-    """
+    """Some base information for the source data."""
+
     alternative_name: str
     website_link: str
     source_type: SourceType
     excel_file_name: Optional[str]  # Mainly for the UK website data
 
     def __post_init__(self) -> None:
-        """Making sure our values adhere to the types instantiated above.
+        """Values adhere to the types instantiated above.
 
         :return: None
         """
@@ -51,7 +49,9 @@ class SourceData:
             raise TypeError(f"Expected SourceType, got {type(self.source_type)}")
 
         if not (self.excel_file_name is None or isinstance(self.excel_file_name, str)):
-            raise TypeError(f"Expected String or None, got {type(self.excel_file_name)}")
+            raise TypeError(
+                f"Expected String or None, got {type(self.excel_file_name)}"
+            )
 
     @property
     def excel_link(self) -> str:
@@ -65,16 +65,22 @@ class SourceData:
 
 @dataclass
 class LeagueData:
+    """Data class for league data."""
+
     excel_identifier_name: str
 
     def __post_init__(self) -> None:
+        """Type checking for the league data.
+
+        :return:
+        """
         if not isinstance(self.excel_identifier_name, str):
             raise TypeError(f"Expected String, got {type(self.excel_identifier_name)}")
 
 
 class Source(Enum):
-    """
-    A list of source that are available to pull from in this program.
+    """A list of source that are available to pull from in this program.
+
     These are set up with the SourceData dataclass that houses general
     information from the source.
     To access this information you can do something like:
@@ -85,7 +91,7 @@ class Source(Enum):
         alternative_name="football_data_uk",
         website_link="https://www.football-data.co.uk",
         source_type=SourceType.EXCEL,
-        excel_file_name="mmz4281"
+        excel_file_name="mmz4281",
     )
 
     @classmethod
@@ -102,9 +108,8 @@ class Source(Enum):
 
 
 class Country(Enum):
-    """
-    Country Enums that are provided in this application.
-    """
+    """Country Enums that are provided in this application."""
+
     BELGIUM = 0
     ENGLAND = 1
     FRANCE = 2
@@ -117,9 +122,11 @@ class Country(Enum):
 
 
 class Leagues(Enum):
-    """
-    Every league available to the platform currently. For right now this
-    is mainly geared towards Europe but will expand as more data comes in.
+    """Every league available to the platform currently.
+
+    For right now this is mainly geared towards Europe
+    but will expand as more data comes in.
+
     This Enum Class will take in a dataclass payload called LeagueData,
     which will hopefully make sense and house information about the league/
     configurations around it.

@@ -9,35 +9,41 @@ jobs:
       strategy:
         matrix:
           python-version: [3.11]
-      steps:
-        - uses: actions/checkout@v2
 
-        - name: Set up Python all python versions
-          uses: actions/setup-python@v2
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Set up Python
+          uses: actions/setup-python@v5
           with:
             python-version: ${{ matrix.python-version }}
             architecture: x64
-
-        - name: Install pip
-          run: | 
-             echo "Installing pip"
-             python -m pip install --upgrade pip
-
-        - name: Install PyLint
-          run: |
-             echo "Installing pylint"
-             pip install pylint
-        
-        - name: Analysing the code with pylint
-          run: |
-            "echo" Checking For Code Funk
-            find . -name '*.py' -exec pylint {} \;
+            cache: "pip"
 
         - name: Install dependencies
+          run: make install-dependencies
+
+        - name: Get Changed Files
+          id: changed-python-files
+          uses: tj-actions/changed-files@v44
+          with:
+            files: |
+              *.py
+              **/*.py
+
+        - name: Format
+          if: always() && steps.changed-python-files.outputs.any_changed == 'true'
           run: |
-            echo "Installing Dependencies"
-            pip install -r requirements.txt
-            pip install -e .
+            make black-format-check FILES="${{ steps.changed-python-files.outputs.all_changed_files }}"
+            make isort-import-check FILES="${{ steps.changed-python-files.outputs.all_changed_files }}"
+
+#        - name: Typecheck
+#          if: always() && steps.changed-python-files.outputs.any_changed == 'true'
+#          run: make mypy-check FILES="${{ steps.changed-python-files.outputs.all_changed_files }}"
+
+        - name: Lint
+          if: always() && steps.changed-python-files.outputs.any_changed == 'true'
+          run: make ruff-lint-check FILES="${{ steps.changed-python-files.outputs.all_changed_files }}"
 
         - name: Run DataframeUtils Test
           run: |
