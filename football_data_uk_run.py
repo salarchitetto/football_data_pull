@@ -105,7 +105,7 @@ def main() -> None:
                 logger.info("")
 
 
-def atest(name: str) -> str:
+def atest(name: str) -> None:
     print(name)
 
 
