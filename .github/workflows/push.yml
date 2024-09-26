@@ -31,6 +31,10 @@ jobs:
               *.py
               **/*.py
 
+        - name: Echo Changed Python Files
+          run:
+            echo "Changed Python Files: ${{ steps.changed-python-files.outputs.files }}"
+
         - name: Format
           if: always() && steps.changed-python-files.outputs.any_changed == 'true'
           run: |
