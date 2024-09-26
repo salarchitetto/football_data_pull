@@ -48,3 +48,11 @@ isort-import-check:
 
 isort-import-fix:
 	isort ${FILES}
+
+# Actions stuff
+
+generate-changelog:
+	gem install github-changelog-generator && \
+	github-changelog-generator -o CHANGELOG.md --no-verbose && \
+	echo "::set-output name=body::$$$(cat CHANGELOG.md)"
+

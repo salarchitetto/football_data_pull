@@ -1,0 +1,31 @@
+name: Releases
+
+on:
+  push:
+    tags:
+    - '*'
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.3'
+          bundler-cache: true
+
+      - name: Generate Changelog
+        id: changelog
+        run: make generate-changelog
+
+      - name: Create Release
+        uses: ncipollo/release-action@v1
+        with:
+          tag: ${{ github.ref }}
+          name: Release ${{ github.ref }} ⚽️🍻🎉
+          body: ${{ steps.changelog.outputs.body }}
+          files: ${{ github.workspace }}/*.py

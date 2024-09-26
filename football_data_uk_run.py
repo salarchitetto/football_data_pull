@@ -13,6 +13,8 @@ from utilities.season_formatter import SeasonDates
 from utilities.team_uuid_generator import TeamUUIDGenerator
 from utilities.utilities import TextColor, generate_create_table_query, highlight_text
 
+# TODO: Pass in args depending on if it's the first time running or not.
+
 logger: Logger = Logger("MAIN")
 # If running this for the first time change this to 25
 # This will back-fill all seasons (That I can get from this source, from 2000 onward)
