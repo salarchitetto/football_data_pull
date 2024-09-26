@@ -32,7 +32,7 @@ jobs:
               **/*.py
 
         - name: Echo Changed Python Files
-          run:
+          run: |
             echo "Changed Python Files: ${{ steps.changed-python-files.outputs.files }}"
 
         - name: Format
