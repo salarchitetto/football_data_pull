@@ -1,10 +1,10 @@
-name: Football Data pipeline
+name: Push - Static Checks
 
 on:
   push
 
 jobs:
-  testing-pipeline:
+  static-checks:
       runs-on: ubuntu-latest
       strategy:
         matrix:
