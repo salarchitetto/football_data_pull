@@ -1,15 +1,21 @@
 name: "Auto Labeler Based on Branch Name"
 
 on:
-  pull_request:
-    types: [opened, synchronize]
+- pull_request
+- issues
+
+permissions:
+  contents: read
 
 jobs:
   label:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: read
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Label the pull request based on branch name
         uses: srvaroa/labeler@master
