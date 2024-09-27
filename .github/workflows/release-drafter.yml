@@ -1,20 +1,24 @@
-name: Releases
+name: Update draft releases
 
 on:
   push:
-    tags:
-    - '*'
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      # Latest commit to include with the release. If omitted, use the latest commit on the main branch.
+      sha:
+        description: Commit SHA
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: read
 
 jobs:
-  release:
+  main:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pull-requests: read
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v5
-
       - name: Draft Python release
         uses: release-drafter/release-drafter@v6
         with:
