@@ -13,7 +13,7 @@ jobs:
       pull-requests: read
     steps:
       - name: Checkout code
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
 
       - name: Draft Python release
         uses: release-drafter/release-drafter@v6
