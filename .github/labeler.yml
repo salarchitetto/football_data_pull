@@ -1,11 +1,11 @@
-feature:
-  - "feat"
-  - "feature"
-  - "enhancement"
-  - "add"
-  - "implement"
+"feature":
+  branches:
+    - "feature/**"
 
-bug:
-  - "fix"
-  - "bug"
-  - "hotfix"
+"bugfix":
+  branches:
+    - "bugfix/**"
+
+"hotfix":
+  branches:
+    - "hotfix/**"
