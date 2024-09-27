@@ -1,29 +1,25 @@
-name: Update draft releases
+# These will be overridden by the publish workflow and set to the new tag
+name-template: 'Next Release'
+tag-template: 'next'
 
-on:
-  push:
-    branches:
-      - main
-  workflow_dispatch:
-    inputs:
-      # Latest commit to include with the release. If omitted, use the latest commit on the main branch.
-      sha:
-        description: Commit SHA
-        type: string
+# Optionally configure your categories and other templates
+categories:
+  - title: '🚀⚽️ Features'
+    labels:
+      - 'feature'
+      - 'enhancement'
+  - title: '🐛 Bug Fixes'
+    labels:
+      - 'fix'
+      - 'bugfix'
+      - 'bug'
+  - title: '📖 Documentation'
+    label: 'documentation'
 
-permissions:
-  contents: write
-  pull-requests: read
+change-template: '- $TITLE @$AUTHOR (#$NUMBER)'
+change-title-escapes: '\<*_&' # You can add # and @ to disable mentions, and add ` to disable code blocks.
 
-jobs:
-  main:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Draft Python release
-        uses: release-drafter/release-drafter@v6
-        with:
-          config-name: release-drafter-python.yml
-          commitish: ${{ inputs.sha || github.sha }}
-          disable-autolabeler: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+template: |
+  ## Changes ⚽️
+
+  $CHANGES  

@@ -1,0 +1,11 @@
+feature:
+  - "feat"
+  - "feature"
+  - "enhancement"
+  - "add"
+  - "implement"
+
+bug:
+  - "fix"
+  - "bug"
+  - "hotfix"
