@@ -1,11 +1,2 @@
-"feature":
-  branches:
-    - "feature/**"
-
-"bugfix":
-  branches:
-    - "bugfix/**"
-
-"hotfix":
-  branches:
-    - "hotfix/**"
+feature: ['feature/*', 'feat/*']
+fix: ['fix/*', 'bugfix/*', 'bug/*', 'hotfix/*']

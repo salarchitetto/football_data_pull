@@ -1,24 +1,19 @@
-name: "Auto Labeler Based on Branch Name"
-
+name: PR Labeler
 on:
-- pull_request
-- issues
+  pull_request:
+    types: [opened]
 
 permissions:
   contents: read
 
 jobs:
-  label:
-    runs-on: ubuntu-latest
+  pr-labeler:
     permissions:
-      contents: write
-      pull-requests: read
+      contents: read
+      pull-requests: write
+    runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Label the pull request based on branch name
-        uses: srvaroa/labeler@master
+      - uses: TimonVS/pr-labeler-action@v5
         with:
           repo-token: ${{ secrets.GITHUB_TOKEN }}
           configuration-path: .github/labeler.yml
