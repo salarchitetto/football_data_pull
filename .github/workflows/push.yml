@@ -1,0 +1,52 @@
+name: Push - Static Checks
+
+on:
+  push
+
+jobs:
+  static-checks:
+      runs-on: ubuntu-latest
+      strategy:
+        matrix:
+          python-version: [3.11]
+
+      steps:
+        - uses: actions/checkout@v4
+
+        - name: Set up Python
+          uses: actions/setup-python@v5
+          with:
+            python-version: ${{ matrix.python-version }}
+            architecture: x64
+            cache: "pip"
+
+        - name: Install dependencies
+          run: pip install mypy black isort ruff
+
+        - name: Get Changed Files
+          id: changed-python-files
+          uses: tj-actions/changed-files@v44
+          with:
+            files: |
+              *.py
+              **/*.py
+
+        - name: Echo Changed Python Files
+          run: |
+            echo "Changed Python Files: ${{ steps.changed-python-files.outputs.files }}"
+
+        - name: Format
+          if: always() && steps.changed-python-files.outputs.any_changed == 'true'
+          run: |
+            make black-format-check FILES="${{ steps.changed-python-files.outputs.all_changed_files }}"
+            make isort-import-check FILES="${{ steps.changed-python-files.outputs.all_changed_files }}"
+
+        - name: Lint
+          if: always() && steps.changed-python-files.outputs.any_changed == 'true'
+          run: make ruff-lint-check FILES="${{ steps.changed-python-files.outputs.all_changed_files }}"
+
+        #        - name: Typecheck
+        #          if: always() && steps.changed-python-files.outputs.any_changed == 'true'
+        #          run: make mypy-check FILES="${{ steps.changed-python-files.outputs.all_changed_files }}"
+
+# TODO: Write tests + make files for the tests.
