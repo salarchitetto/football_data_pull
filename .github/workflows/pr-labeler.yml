@@ -11,8 +11,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Label PR based on title or body
-        uses: actions/labeler@v5
+      - name: Add labels based on PR title and body
+        uses: actions-ecosystem/action-add-labels@v1
         with:
-          repo-token: ${{ secrets.GITHUB_TOKEN }}
-          configuration-path: .github/labeler.yml
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          labels: |
+            feature: 'feat,feature,enhancement,add,implement'
+            bug: 'fix,bug,hotfix'
