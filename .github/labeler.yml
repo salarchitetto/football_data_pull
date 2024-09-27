@@ -1,2 +1,8 @@
 feature ⚽️🍻: ['feature/*', 'feat/*']
 bugfix 🐛: ['fix/*', 'bugfix/*', 'bug/*', 'hotfix/*']
+documentation 📖: ['docs/*', 'documentation/*']
+enhancement 🚀: ['enhancement/*', 'improvement/*']
+refactor 🛠: ['refactor/*']
+performance 🏎: ['performance/*']
+testing 🧪: ['test/*', 'testing/*']
+breaking 🚨: ['breaking/*']
